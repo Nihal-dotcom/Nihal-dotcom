@@ -1,8 +1,8 @@
 """
 Hand Tracing Module
-By: Murtaza Hassan
-Youtube: http://www.youtube.com/c/MurtazasWorkshopRoboticsandAI
-Website: https://www.murtazahassan.com/
+By: Nihal Sinha
+Youtube: http://www.youtube.com/c/technihal
+Website:
 """
 
 import cv2
