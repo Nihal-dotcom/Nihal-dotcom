@@ -1,5 +1,5 @@
 """
-Hand Tracing Module
+Hand Tracking Module
 By: Nihal Sinha
 Youtube: http://www.youtube.com/c/technihal
 Website:
