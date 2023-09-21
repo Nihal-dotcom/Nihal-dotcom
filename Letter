@@ -1,57 +1,54 @@
 package com.adp.eletter.service;
 
-import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.stereotype.Service;
 
-import com.adp.eletter.entitiy.Manager;
-import com.adp.eletter.repository.ManagerRepository;
+import com.adp.eletter.entitiy.HR;
 
-public class ManagerServiceImplTest {
 
-    @Mock
-    private ManagerRepository managerRepository;
+@Service
+public class TemplateServiceImpl implements TemplateService {
+	
+	
+	private final  ResourceLoader resourceLoader;
+	
+	@Value("classpath:static/")
+	private Resource templateBasepath;
+	
+	
+	private final Map<String, String> templateIdToFileNameMap = new HashMap<>();
+	
+	
+	public TemplateServiceImpl(ResourceLoader resourceLoader) {
+		this.resourceLoader = resourceLoader;
+		intializeTemplateIdToFileNameMap();
+	}
 
-    @Mock
-    private CandidateServiceImpl candidateServiceImpl;
+	private void intializeTemplateIdToFileNameMap() {
+		templateIdToFileNameMap.put("offerletter","offerletter.docx");
+	}
 
-    @InjectMocks
-    private ManagerServiceImpl managerService;
+//	@Override
+//	public String loadTemplate(String templateFileName) {
+//		
+//		return null;
+//	}
 
-    @BeforeEach
-    public void setup() {
-        MockitoAnnotations.openMocks(this);
-    }
+	@Override
+	public String getTemplateName(String templateId) {
+		
+		return templateId;
+	}
 
-    @Test
-    public void testGetById() {
-        Manager mockManager = new Manager();
-        when(managerRepository.findById(1L)).thenReturn(Optional.of(mockManager));
-
-        Manager resultManager = managerService.getById(1L);
-
-        assertNotNull(resultManager);
-        assertEquals(mockManager, resultManager);
-    }
-
-    @Test
-    public void testUpdateProfile() {
-        Manager existingManager = new Manager();
-        Manager updatedManager = new Manager();
-        when(managerRepository.findById(1L)).thenReturn(Optional.of(existingManager));
-        when(managerRepository.save(existingManager)).thenReturn(existingManager);
-
-        Manager resultManager = managerService.updateProfile(1L, updatedManager);
-
-        assertNotNull(resultManager);
-        assertEquals(existingManager, resultManager);
-    }
-
-    // Similarly, you can write tests for other methods ...
+	@Override
+	public String getTemplateFileName(String templateId) {
+	
+		return templateIdToFileNameMap.get(templateId);
+	}
 
 }
