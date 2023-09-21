@@ -271,6 +271,51 @@ public class CandidateRepositoryTest {
 }
 
 
+
+<!-- JUnit 5 ->
+
+<dependency>
+
+<groupId>org.junit.jupiter</groupId> <artifactId>junit-jupiter-api</artifactId>
+
+<version>5.9.3</version> <scope>test</scope>
+
+</dependency>
+
+<!-- Spring Boot Test Starter --> <dependency>
+
+<groupId>org.springframework.boot</groupId>
+
+<artifactId>spring-boot-starter-test</artifactId
+
+<scope>test</scope>
+
+</dependency>
+
+<!-- H2 Database for in-memory testing --> <dependency>
+
+<groupId>com.h2database</groupId> <artifactId>h2</artifactId>
+
+<scope>test</scope>
+
+</dependency>
+
+
+
+spring.datasource.url=jdbc: h2: mem:testdb
+
+spring.datasource.driver-class-name=org.h2.Driver spring.datasource.username=sa
+
+spring.datasource.password= spring.jpa.database-platform-org.hibernate.dialect.H2
+
+Dialect
+
+
+
+
+
+
+
 // HRRepository
 package com.adp.eletter.repository;
 
