@@ -180,37 +180,26 @@ public class HRTest {
 //Manager
 package com.adp.eletter.entitiy;
 
-import java.util.List;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import org.junit.jupiter.api.Test;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
-@ToString
-@Entity
-@Table(name = "batch2_ttfive_Manager")
-public class Manager {
-	
-	@Id
-	private Long assocId;
-	
-	private String name;
-	
-	private String password;
-	
-	private String email;
-	
-	
-	//private List<Candidate> candidatesPendingApproval;
-	
+public class ManagerTest {
+
+    @Test
+    public void testManagerProperties() {
+        Manager manager = new Manager();
+        
+        // Setting properties
+        manager.setAssocId(1L);
+        manager.setName("Jane");
+        manager.setEmail("jane.manager@example.com");
+        manager.setPassword("securePassword");
+        
+        // Assertions to verify getters
+        assertEquals(1L, manager.getAssocId());
+        assertEquals("Jane", manager.getName());
+        assertEquals("jane.manager@example.com", manager.getEmail());
+        assertEquals("securePassword", manager.getPassword());
+    }
 }
