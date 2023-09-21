@@ -1,113 +1,57 @@
 package com.adp.eletter.service;
 
-import java.util.Collections;
-import java.util.List;
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
-import com.adp.eletter.entitiy.Candidate;
-import com.adp.eletter.entitiy.Candidate.OfferLetterStatus;
 import com.adp.eletter.entitiy.Manager;
 import com.adp.eletter.repository.ManagerRepository;
 
+public class ManagerServiceImplTest {
 
-@Service
-public class ManagerServiceImpl implements ManagerService{
-	
-	@Autowired
-	private  ManagerRepository managerRepository;
-	
-	@Autowired
-	private CandidateServiceImpl candidateServiceImpl;
-	
-	@Override
-	public Manager getById(Long assocId) {
-		
-		
-		Manager manager = managerRepository.findById(assocId).orElse(null);
-		if(manager!=null) {
-			return manager;
-		}
-		return null;
-	}
+    @Mock
+    private ManagerRepository managerRepository;
 
-	@Override
-	public Manager updateProfile(Long assocId, Manager updatedManager) {
-		
-		Manager managerExists = managerRepository.findById(assocId).orElse(null);
-		
-		if(managerExists!=null) {
-		managerExists.setAssocId(updatedManager.getAssocId());
-		managerExists.setAssocId(updatedManager.getAssocId());
-		managerExists.setEmail(updatedManager.getEmail());
-		managerExists.setName(updatedManager.getName());
-		managerExists.setPassword(updatedManager.getPassword());
-		
-		return managerRepository.save(managerExists);
-		}
-		
-		return null;
-	}
-//
-//	@Override
-//	public List<Candidate> getCandidatesPendingForApproval(Long assocId) {
-//		
-//		Manager manager = managerRepository.findById(assocId).orElse(null);
-//		if(manager!=null) {
-//			return candidateServiceImpl.getCandidateByManagerId(assocId);
-//		}
-//		return Collections.EMPTY_LIST;
-//	}
+    @Mock
+    private CandidateServiceImpl candidateServiceImpl;
 
-	@Override
-	public List<Candidate> getCandidatesPendingForApproval(Long assocId) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @InjectMocks
+    private ManagerServiceImpl managerService;
 
-	@Override
-	public boolean approveCandidate(Long assocId, Long candidateId) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @BeforeEach
+    public void setup() {
+        MockitoAnnotations.openMocks(this);
+    }
 
-	@Override
-	public boolean rejectCandidate(Long assocId, Long candidateId) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @Test
+    public void testGetById() {
+        Manager mockManager = new Manager();
+        when(managerRepository.findById(1L)).thenReturn(Optional.of(mockManager));
 
-//	@Override
-//	public boolean approveCandidate(Long assocId, Long candidateId) {
-//		Manager manager = managerRepository.findById(assocId).orElse(null);
-//		if(manager!=null) {
-//			Candidate candidate = candidateServiceImpl.getCandidateById(candidateId);
-//			
-//			if(candidate!=null) {
-//				
-//				candidate.setOfferLetterStatus(OfferLetterStatus.APPROVED);
-//				return true;
-//			}
-//		}
-//		return false;
-//	}
+        Manager resultManager = managerService.getById(1L);
 
-//	@Override
-//	public boolean rejectCandidate(Long assocId, Long candidateId) {
-//		
-//		Manager manager = managerRepository.findById(assocId).orElse(null);
-//		if(manager!=null) {
-//			Candidate candidate = candidateServiceImpl.getCandidateById(candidateId);
-//			
-//			if(candidate!=null) {
-//				
-//				candidate.setOfferLetterStatus(OfferLetterStatus.REJECTED);
-//				return true;
-//			}
-//		}
-//		return false;
-//	
-//	}
+        assertNotNull(resultManager);
+        assertEquals(mockManager, resultManager);
+    }
+
+    @Test
+    public void testUpdateProfile() {
+        Manager existingManager = new Manager();
+        Manager updatedManager = new Manager();
+        when(managerRepository.findById(1L)).thenReturn(Optional.of(existingManager));
+        when(managerRepository.save(existingManager)).thenReturn(existingManager);
+
+        Manager resultManager = managerService.updateProfile(1L, updatedManager);
+
+        assertNotNull(resultManager);
+        assertEquals(existingManager, resultManager);
+    }
+
+    // Similarly, you can write tests for other methods ...
 
 }
