@@ -65,39 +65,47 @@ public class CandidateControllerTest {
 </dependency>
 
 
-//dto
+
 package com.adp.eletter.dto;
 
-import com.adp.eletter.entitiy.Candidate.OfferLetterStatus;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import org.junit.jupiter.api.Test;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
-@ToString
-@Builder
-public class CandidateDTO {
-	private Long candidateId;
-	private String firstName;
-	private String lastName;
-	private String email;
-	private Long pay;
-	private String jobId;
-	private String gender;
-	private Long mobile;
-	private String assignedHRId;
-	private String managerId;
-	@Enumerated(EnumType.STRING)
-	private OfferLetterStatus offerLetterStatus;
-	private String selectedTemplateId;
-	private String generatedOfferLetter;
+public class CandidateDTOTest {
+
+    @Test
+    public void testCandidateDTO() {
+        CandidateDTO candidateDTO = new CandidateDTO();
+        
+        // Setting properties
+        candidateDTO.setCandidateId(1L);
+        candidateDTO.setFirstName("John");
+        candidateDTO.setLastName("Doe");
+        candidateDTO.setEmail("john.doe@example.com");
+        
+        // more setters...
+
+        // Assertions to verify getters
+        assertEquals(1L, candidateDTO.getCandidateId());
+        assertEquals("John", candidateDTO.getFirstName());
+        assertEquals("Doe", candidateDTO.getLastName());
+        assertEquals("john.doe@example.com", candidateDTO.getEmail());
+        
+        // more assertions...
+    }
+
+    @Test
+    public void testBuilderPattern() {
+        CandidateDTO candidateDTO = CandidateDTO.builder()
+                                               .candidateId(1L)
+                                               .firstName("John")
+                                               .lastName("Doe")
+                                               // ... other fields ...
+                                               .build();
+
+        assertEquals(1L, candidateDTO.getCandidateId());
+        assertEquals("John", candidateDTO.getFirstName());
+        // ... other assertions ...
+    }
 }
