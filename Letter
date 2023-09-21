@@ -63,3 +63,41 @@ public class CandidateControllerTest {
     <version>5.7.0</version>
     <scope>test</scope>
 </dependency>
+
+
+//dto
+package com.adp.eletter.dto;
+
+import com.adp.eletter.entitiy.Candidate.OfferLetterStatus;
+
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@ToString
+@Builder
+public class CandidateDTO {
+	private Long candidateId;
+	private String firstName;
+	private String lastName;
+	private String email;
+	private Long pay;
+	private String jobId;
+	private String gender;
+	private Long mobile;
+	private String assignedHRId;
+	private String managerId;
+	@Enumerated(EnumType.STRING)
+	private OfferLetterStatus offerLetterStatus;
+	private String selectedTemplateId;
+	private String generatedOfferLetter;
+}
