@@ -1,43 +1,139 @@
-package com.adp.eletter.service;
+package com.adp.eletter.api;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
-import com.adp.eletter.repository.EletterRepository;
+import com.adp.eletter.dto.CandidateDTO;
+import com.adp.eletter.entitiy.Candidate;
+import com.adp.eletter.entitiy.Candidate.OfferLetterStatus;
+import com.adp.eletter.service.CandidateService;
+import com.adp.eletter.service.CandidateServiceImpl;
 
-@SpringBootTest
-public class EletterServiceTest {
-
-    @Mock
-    private EletterRepository eletterRepository;
-
-    @InjectMocks
-    private EletterService eletterService;
-
-    @BeforeEach
-    public void setUp() {
-        // This initializes objects annotated with Mockito annotations
-        MockitoAnnotations.initMocks(this);
-    }
-
-    @Test
-    public void testSomeEletterServiceMethod() {
-        // Given
-        // some setup
-
-        // When
-        // some action, e.g., eletterService.someMethod();
-
-        // Then
-        // assertions, e.g., assertEquals(expectedValue, actualValue);
-    }
+@RestController
+@RequestMapping("api/candidate")
+@CrossOrigin
+public class CandidateController {
+	
+	@Autowired(required=false)
+	private CandidateService candidateService;
+	
+//	@PostMapping("/create")
+//	public ResponseEntity<Candidate> createCandidate(@RequestBody Candidate candidate){
+//		try {
+//			Candidate newcandidate = candidateService.CreateCandidate(candidate);
+//			return new ResponseEntity<>(newcandidate,HttpStatus.OK);
+//			
+//		}catch(Exception e) {
+//			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
+//		}
+//	}
+	
+	@GetMapping("/all")
+	public ResponseEntity<List<CandidateDTO>> getAllCandidate(){
+		try {
+			List<CandidateDTO> candidateDTOList = candidateService.getAllCandidates();
+			return new ResponseEntity<>(candidateDTOList,HttpStatus.OK);
+		} catch (Exception e) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
+		}
+	}
+	
+	@GetMapping("/{id}")
+	public ResponseEntity<CandidateDTO> getCandidateById(@PathVariable Long id){
+		try {
+			CandidateDTO candidateDTO = candidateService.getCandidateById(id);
+			return new ResponseEntity<>(candidateDTO,HttpStatus.OK);
+		} catch (Exception e) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
+		}
+	}
+	
+	
+	@GetMapping("/assignedHr/{id}")
+	public ResponseEntity<List<CandidateDTO>> getCandidateByHRId(@PathVariable String id){
+		try {
+			List<CandidateDTO>  candidateDTOList = candidateService.getCandidateByHRId(id);
+			return new ResponseEntity<>(candidateDTOList ,HttpStatus.OK);
+		} catch (Exception e) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
+		}
+	}
+	
+	@GetMapping("/manager/{id}")
+	public ResponseEntity<List<CandidateDTO>> getCandidateByManagerId(@PathVariable String id){
+		try {
+			List<CandidateDTO>  candidateDTOList = candidateService.getCandidateByManagerId(id);
+			return new ResponseEntity<>(candidateDTOList ,HttpStatus.OK);
+		} catch (Exception e) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
+		}
+	}
+	
+	@GetMapping("/status/new")
+	public ResponseEntity<List<CandidateDTO>> getCandidateWithStatusNew(){
+		try {
+			List<CandidateDTO>  candidateDTOList = candidateService.getCandidateWithNewStatus();
+			return new ResponseEntity<>(candidateDTOList ,HttpStatus.OK);
+		} catch (Exception e) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
+		}
+	}
+	
+	
+	@GetMapping("/status/pending")
+	public ResponseEntity<List<CandidateDTO>> getCandidateWithStatusPending(){
+		try {
+			List<CandidateDTO>  candidateDTOList = candidateService.getCandidateWithPendingStatus();
+			return new ResponseEntity<>(candidateDTOList ,HttpStatus.OK);
+		} catch (Exception e) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
+		}
+	}
+	
+	
+	@GetMapping("/status/approved")
+	public ResponseEntity<List<CandidateDTO>> getCandidateWithStatusApproved(){
+		try {
+			List<CandidateDTO>  candidateDTOList = candidateService.getCandidateWithApprovedStatus();
+			return new ResponseEntity<>(candidateDTOList ,HttpStatus.OK);
+		} catch (Exception e) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
+		}
+	}
+	
+	@GetMapping("/status/rejected")
+	public ResponseEntity<List<CandidateDTO>> getCandidateWithStatusRejected(){
+		try {
+			List<CandidateDTO>  candidateDTOList = candidateService.getCandidateWithRejectedStatus();
+			return new ResponseEntity<>(candidateDTOList ,HttpStatus.OK);
+		} catch (Exception e) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
+		}
+	}
+	
+	@PutMapping("/update-status/{id}/{status}")
+	public ResponseEntity<CandidateDTO> updateCandidateStatus(@PathVariable Long id, @PathVariable OfferLetterStatus status){
+		try {
+			CandidateDTO  candidateDTO = candidateService.updateOfferLetterStatus(id,status);
+			return new ResponseEntity<>(candidateDTO ,HttpStatus.OK);
+		} catch (Exception e) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
+		}
+	}
 }
+
 
 
 package com.adp.eletter.api;
