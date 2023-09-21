@@ -1,1 +1,51 @@
+package com.adp.eletter.service;
 
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.Arrays;
+import java.util.Optional;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import com.adp.eletter.dto.CandidateDTO;
+import com.adp.eletter.entitiy.Candidate;
+import com.adp.eletter.repository.CandidateRepository;
+import org.modelmapper.ModelMapper;
+
+public class CandidateServiceImplTest {
+
+    @Mock
+    private CandidateRepository candidateRepository;
+
+    @Mock
+    private ModelMapper modelMapper;
+
+    @InjectMocks
+    private CandidateServiceImpl candidateService;
+
+    @BeforeEach
+    public void setup() {
+        MockitoAnnotations.openMocks(this);
+    }
+
+    @Test
+    public void testGetAllCandidates() throws Exception {
+        when(candidateRepository.findAll()).thenReturn(Arrays.asList(new Candidate()));
+
+        CandidateDTO mockDTO = new CandidateDTO();
+        when(modelMapper.map(any(Candidate.class), eq(CandidateDTO.class))).thenReturn(mockDTO);
+
+        var candidates = candidateService.getAllCandidates();
+
+        assertNotNull(candidates);
+        assertFalse(candidates.isEmpty());
+        assertEquals(1, candidates.size());
+    }
+
+    // ... You can continue to write more tests for other methods ...
+}
