@@ -240,6 +240,51 @@ public class CandidateExceptionTest {
     }
 }
 
+//CandidateRepository
+
+package com.adp.eletter.repository;
+
+import java.util.Optional;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import com.adp.eletter.entitiy.Candidate;
+
+@Repository
+public interface CandidateRepository extends JpaRepository<Candidate, Long > {
+	
+//	Optional<Candidate> findById(Integer id);
+}
+
+
+// HRRepository
+package com.adp.eletter.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import com.adp.eletter.entitiy.HR;
+
+@Repository
+public interface HRRepository extends JpaRepository<HR, Long> {
+
+}
+
+//ManagerRepository
+
+package com.adp.eletter.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import com.adp.eletter.entitiy.Manager;
+
+@Repository
+public interface ManagerRepository extends JpaRepository<Manager, Long>{
+
+}
+
 
 
 
