@@ -208,16 +208,39 @@ public class ManagerTest {
 
 package com.adp.eletter.exception;
 
-public class CandidateException extends Exception{
-	public CandidateException() {
-		
-	}
-	
-	public CandidateException(String message) {
-		super(message);
-	}
-	
-	public CandidateException(String message, Throwable t) {
-		super(message,t);
-	}
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
+
+public class CandidateExceptionTest {
+
+    @Test
+    public void testDefaultConstructor() {
+        CandidateException exception = new CandidateException();
+        assertTrue(exception instanceof Exception);
+    }
+
+    @Test
+    public void testMessageConstructor() {
+        String message = "Test exception message";
+        CandidateException exception = new CandidateException(message);
+        
+        assertEquals(message, exception.getMessage());
+    }
+
+    @Test
+    public void testMessageAndThrowableConstructor() {
+        String message = "Test exception message";
+        Throwable cause = new RuntimeException("Test cause");
+        CandidateException exception = new CandidateException(message, cause);
+        
+        assertEquals(message, exception.getMessage());
+        assertEquals(cause, exception.getCause());
+    }
 }
+
+
+
+
+
