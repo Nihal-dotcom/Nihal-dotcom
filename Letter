@@ -1,163 +1,50 @@
 package com.adp.eletter.api;
 
-import java.util.List;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
-
-import com.adp.eletter.dto.CandidateDTO;
-import com.adp.eletter.entitiy.Candidate;
-import com.adp.eletter.entitiy.Candidate.OfferLetterStatus;
-import com.adp.eletter.service.CandidateService;
-import com.adp.eletter.service.CandidateServiceImpl;
-
-@RestController
-@RequestMapping("api/candidate")
-@CrossOrigin
-public class CandidateController {
-	
-	@Autowired(required=false)
-	private CandidateService candidateService;
-	
-//	@PostMapping("/create")
-//	public ResponseEntity<Candidate> createCandidate(@RequestBody Candidate candidate){
-//		try {
-//			Candidate newcandidate = candidateService.CreateCandidate(candidate);
-//			return new ResponseEntity<>(newcandidate,HttpStatus.OK);
-//			
-//		}catch(Exception e) {
-//			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
-//		}
-//	}
-	
-	@GetMapping("/all")
-	public ResponseEntity<List<CandidateDTO>> getAllCandidate(){
-		try {
-			List<CandidateDTO> candidateDTOList = candidateService.getAllCandidates();
-			return new ResponseEntity<>(candidateDTOList,HttpStatus.OK);
-		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
-		}
-	}
-	
-	@GetMapping("/{id}")
-	public ResponseEntity<CandidateDTO> getCandidateById(@PathVariable Long id){
-		try {
-			CandidateDTO candidateDTO = candidateService.getCandidateById(id);
-			return new ResponseEntity<>(candidateDTO,HttpStatus.OK);
-		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
-		}
-	}
-	
-	
-	@GetMapping("/assignedHr/{id}")
-	public ResponseEntity<List<CandidateDTO>> getCandidateByHRId(@PathVariable String id){
-		try {
-			List<CandidateDTO>  candidateDTOList = candidateService.getCandidateByHRId(id);
-			return new ResponseEntity<>(candidateDTOList ,HttpStatus.OK);
-		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
-		}
-	}
-	
-	@GetMapping("/manager/{id}")
-	public ResponseEntity<List<CandidateDTO>> getCandidateByManagerId(@PathVariable String id){
-		try {
-			List<CandidateDTO>  candidateDTOList = candidateService.getCandidateByManagerId(id);
-			return new ResponseEntity<>(candidateDTOList ,HttpStatus.OK);
-		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
-		}
-	}
-	
-	@GetMapping("/status/new")
-	public ResponseEntity<List<CandidateDTO>> getCandidateWithStatusNew(){
-		try {
-			List<CandidateDTO>  candidateDTOList = candidateService.getCandidateWithNewStatus();
-			return new ResponseEntity<>(candidateDTOList ,HttpStatus.OK);
-		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
-		}
-	}
-	
-	
-	@GetMapping("/status/pending")
-	public ResponseEntity<List<CandidateDTO>> getCandidateWithStatusPending(){
-		try {
-			List<CandidateDTO>  candidateDTOList = candidateService.getCandidateWithPendingStatus();
-			return new ResponseEntity<>(candidateDTOList ,HttpStatus.OK);
-		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
-		}
-	}
-	
-	
-	@GetMapping("/status/approved")
-	public ResponseEntity<List<CandidateDTO>> getCandidateWithStatusApproved(){
-		try {
-			List<CandidateDTO>  candidateDTOList = candidateService.getCandidateWithApprovedStatus();
-			return new ResponseEntity<>(candidateDTOList ,HttpStatus.OK);
-		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
-		}
-	}
-	
-	@GetMapping("/status/rejected")
-	public ResponseEntity<List<CandidateDTO>> getCandidateWithStatusRejected(){
-		try {
-			List<CandidateDTO>  candidateDTOList = candidateService.getCandidateWithRejectedStatus();
-			return new ResponseEntity<>(candidateDTOList ,HttpStatus.OK);
-		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
-		}
-	}
-	
-	@PutMapping("/update-status/{id}/{status}")
-	public ResponseEntity<CandidateDTO> updateCandidateStatus(@PathVariable Long id, @PathVariable OfferLetterStatus status){
-		try {
-			CandidateDTO  candidateDTO = candidateService.updateOfferLetterStatus(id,status);
-			return new ResponseEntity<>(candidateDTO ,HttpStatus.OK);
-		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
-		}
-	}
-}
-
-
-
-package com.adp.eletter.api;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import java.util.Arrays;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-public class EletterControllerTest {
+import com.adp.eletter.dto.CandidateDTO;
+import com.adp.eletter.service.CandidateService;
 
-    @Autowired
+@WebMvcTest(CandidateController.class)
+public class CandidateControllerTest {
+
+    @MockBean
+    private CandidateService candidateService;
+
+    @InjectMocks
+    private CandidateController candidateController;
+
     private MockMvc mockMvc;
 
-    @Test
-    public void testGetEletterEndpoint() throws Exception {
-        mockMvc.perform(get("/eletter/some-endpoint"))
-               .andExpect(status().isOk());
+    @BeforeEach
+    public void setup() {
+        mockMvc = MockMvcBuilders.standaloneSetup(candidateController).build();
     }
+
+    @Test
+    public void testGetAllCandidate() throws Exception {
+        when(candidateService.getAllCandidates()).thenReturn(Arrays.asList(new CandidateDTO()));
+
+        mockMvc.perform(get("/api/candidate/all"))
+               .andExpect(status().isOk())
+               .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+
+        verify(candidateService).getAllCandidates();
+    }
+    
+    // Similarly, you can add tests for other endpoints...
 }
