@@ -311,6 +311,12 @@ spring.datasource.password= spring.jpa.database-platform-org.hibernate.dialect.H
 Dialect
 
 
+spring.datasource.url=jdbc:h2:mem:testdb
+spring.datasource.driver-class-name=org.h2.Driver
+spring.datasource.username=sa
+spring.datasource.password=
+spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+
 
 
 
@@ -319,29 +325,73 @@ Dialect
 // HRRepository
 package com.adp.eletter.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.junit.jupiter.api.Test;
 
 import com.adp.eletter.entitiy.HR;
 
-@Repository
-public interface HRRepository extends JpaRepository<HR, Long> {
+@DataJpaTest
+public class HRRepositoryTest {
 
+    @Autowired
+    private HRRepository hrRepository;
+
+    @Test
+    public void testSaveAndFindById() {
+        HR hr = new HR();
+        // set HR properties...
+
+        hr = hrRepository.save(hr);
+        
+        assertTrue(hrRepository.findById(hr.getAssocId()).isPresent());
+    }
 }
+
+
+
+
+
+
 
 //ManagerRepository
 
 package com.adp.eletter.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.junit.jupiter.api.Test;
 
 import com.adp.eletter.entitiy.Manager;
 
-@Repository
-public interface ManagerRepository extends JpaRepository<Manager, Long>{
+@DataJpaTest
+public class ManagerRepositoryTest {
 
+    @Autowired
+    private ManagerRepository managerRepository;
+
+    @Test
+    public void testSaveAndFindById() {
+        Manager manager = new Manager();
+        // set manager properties...
+
+        manager = managerRepository.save(manager);
+        
+        assertTrue(managerRepository.findById(manager.getAssocId()).isPresent());
+    }
 }
+
+
+spring.datasource.url=jdbc:h2:mem:testdb
+spring.datasource.driver-class-name=org.h2.Driver
+spring.datasource.username=sa
+spring.datasource.password=
+spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+
 
 
 
