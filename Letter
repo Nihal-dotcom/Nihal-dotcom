@@ -604,27 +604,7 @@ public CandidateDTO updateOfferLetterStatus(Long candidateId, OfferLetterStatus 
 }
 
 //
-package com.adp.eletter.service;
 
-import java.util.List;
-
-import com.adp.eletter.entitiy.Candidate;
-import com.adp.eletter.entitiy.HR;
-
-public interface HrService {
-	
-	public abstract HR getHRById(Long assocId);
-	
-	public abstract HR updateProfile(Long assocId, HR updatedHR);
-	
-	public abstract List<Candidate> getCandidateAssignedToHR(Long assocId);
-	
-	public abstract boolean selectTemplateForCandidate(Long assocId, Long candidateId, String templateId);
-	
-	public abstract boolean generateOfferLetter(Long assocId, Long candidateId);
-	
-	
-	//public abstract boolean storeGeneratedOfferLetter(Long assocId, Long candidateId, String offerLetterFilePath);
 	
 	
 }
@@ -836,26 +816,6 @@ public class HrServiceImpl implements HrService {
 
 }
 
-//
-package com.adp.eletter.service;
-
-import java.util.List;
-
-import com.adp.eletter.entitiy.Candidate;
-import com.adp.eletter.entitiy.Manager;
-
-public interface ManagerService {
-
-	public abstract Manager getById(Long assocId);
-	
-	public abstract Manager updateProfile(Long assocId, Manager updatedManager);
-	
-	public List<Candidate> getCandidatesPendingForApproval(Long assocId);
-	
-	public boolean approveCandidate(Long assocId, Long candidateId);
-	
-	public boolean rejectCandidate(Long assocId, Long candidateId);
-}
 
 
 
@@ -975,19 +935,6 @@ public class ManagerServiceImpl implements ManagerService{
 }
 
 
-//
-
-package com.adp.eletter.service;
-
-public interface TemplateService {
-	
-		//public abstract String loadTemplate(String templateFileName);
-		
-		public abstract String getTemplateName(String templateId);
-		
-		public abstract String getTemplateFileName(String templateId);
-		
-}
 
 
 //
