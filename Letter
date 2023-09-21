@@ -113,93 +113,42 @@ public class CandidateDTOTest {
 
 
 // candidate 
+
 package com.adp.eletter.entitiy;
 
-import java.time.LocalDate;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.SequenceGenerator;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import org.junit.jupiter.api.Test;
 
+public class CandidateTest {
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
-@ToString
-@Entity
-@Table(name = "batch2_ttfive_candidate")
-public class Candidate {
-	@Id
-	@Column(name = "candidate_Id")
-	private Long candidateId;
-	
-	@Column(name = "first_Name")
-	private String firstName;
-	
-	@Column(name = "last_Name")
-	private String lastName;
-	
-	@Column(name = "email")
-	private String email;
-	
-	@Column(name = "pay")
-	private Long pay;
-	
-	@Column(name = "job_Id")
-	private String jobId;
-	
-	@Column(name = "gender")
-	private String gender;
-	
-	
-	
-	@Column(name = "mobile")
-	private Long mobile;
-	
-	@Column(name = "assignedHRId")
-	private String assignedHRId;
-	
-	@Column(name = "manager_Id")
-	private String managerId;
-	
-	@Enumerated(EnumType.STRING)
-	@Column(name = "offerLetterStatus")
-	private OfferLetterStatus offerLetterStatus;
-	
-	@Column(name = "selected_Template_Id")
-	private String selectedTemplateId;
-	
-	@Column(name = "generated_Offer_Letter")
-	private String generatedOfferLetter;
-	
+    @Test
+    public void testCandidateProperties() {
+        Candidate candidate = new Candidate();
+        
+        // Setting properties
+        candidate.setCandidateId(1L);
+        candidate.setFirstName("John");
+        candidate.setLastName("Doe");
+        candidate.setEmail("john.doe@example.com");
+        
+        // ... set other properties ...
 
-	public OfferLetterStatus getOfferLetterStatus() {
-		return offerLetterStatus;
-	}
+        // Assertions to verify getters
+        assertEquals(1L, candidate.getCandidateId());
+        assertEquals("John", candidate.getFirstName());
+        assertEquals("Doe", candidate.getLastName());
+        assertEquals("john.doe@example.com", candidate.getEmail());
+        
+        // ... verify other properties ...
 
-	public void setOfferLetterStatus(OfferLetterStatus offerLetterStatus) {
-		this.offerLetterStatus = offerLetterStatus;
-	}
-
-	public enum OfferLetterStatus {
-			GENERATED,
-			PENDING,
-			APPROVED,
-			REJECTED
-	}
+        // Testing OfferLetterStatus enum
+        candidate.setOfferLetterStatus(Candidate.OfferLetterStatus.GENERATED);
+        assertEquals(Candidate.OfferLetterStatus.GENERATED, candidate.getOfferLetterStatus());
+    }
 }
+
+
 
 //HR
 package com.adp.eletter.entitiy;
