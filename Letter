@@ -66,6 +66,7 @@ public class CandidateControllerTest {
 
 
 
+//dto test
 package com.adp.eletter.dto;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -108,4 +109,171 @@ public class CandidateDTOTest {
         assertEquals("John", candidateDTO.getFirstName());
         // ... other assertions ...
     }
+}
+
+
+// candidate 
+package com.adp.eletter.entitiy;
+
+import java.time.LocalDate;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@ToString
+@Entity
+@Table(name = "batch2_ttfive_candidate")
+public class Candidate {
+	@Id
+	@Column(name = "candidate_Id")
+	private Long candidateId;
+	
+	@Column(name = "first_Name")
+	private String firstName;
+	
+	@Column(name = "last_Name")
+	private String lastName;
+	
+	@Column(name = "email")
+	private String email;
+	
+	@Column(name = "pay")
+	private Long pay;
+	
+	@Column(name = "job_Id")
+	private String jobId;
+	
+	@Column(name = "gender")
+	private String gender;
+	
+	
+	
+	@Column(name = "mobile")
+	private Long mobile;
+	
+	@Column(name = "assignedHRId")
+	private String assignedHRId;
+	
+	@Column(name = "manager_Id")
+	private String managerId;
+	
+	@Enumerated(EnumType.STRING)
+	@Column(name = "offerLetterStatus")
+	private OfferLetterStatus offerLetterStatus;
+	
+	@Column(name = "selected_Template_Id")
+	private String selectedTemplateId;
+	
+	@Column(name = "generated_Offer_Letter")
+	private String generatedOfferLetter;
+	
+
+	public OfferLetterStatus getOfferLetterStatus() {
+		return offerLetterStatus;
+	}
+
+	public void setOfferLetterStatus(OfferLetterStatus offerLetterStatus) {
+		this.offerLetterStatus = offerLetterStatus;
+	}
+
+	public enum OfferLetterStatus {
+			GENERATED,
+			PENDING,
+			APPROVED,
+			REJECTED
+	}
+}
+
+//HR
+package com.adp.eletter.entitiy;
+
+import java.util.List;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@ToString
+
+@Entity
+@Table(name ="batch2_ttfivee_HR")
+public class HR {
+	
+	@Id
+	private Long assocId;
+	
+	private String name;
+	
+	private String password;
+	
+	private String email;
+	
+	
+	//private List<Candidate> assignedCandidates;
+	
+}
+
+//Manager
+package com.adp.eletter.entitiy;
+
+import java.util.List;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@ToString
+@Entity
+@Table(name = "batch2_ttfive_Manager")
+public class Manager {
+	
+	@Id
+	private Long assocId;
+	
+	private String name;
+	
+	private String password;
+	
+	private String email;
+	
+	
+	//private List<Candidate> candidatesPendingApproval;
+	
 }
