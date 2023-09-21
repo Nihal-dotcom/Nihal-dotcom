@@ -153,40 +153,28 @@ public class CandidateTest {
 //HR
 package com.adp.eletter.entitiy;
 
-import java.util.List;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import org.junit.jupiter.api.Test;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
-@ToString
+public class HRTest {
 
-@Entity
-@Table(name ="batch2_ttfivee_HR")
-public class HR {
-	
-	@Id
-	private Long assocId;
-	
-	private String name;
-	
-	private String password;
-	
-	private String email;
-	
-	
-	//private List<Candidate> assignedCandidates;
-	
+    @Test
+    public void testHRProperties() {
+        HR hr = new HR();
+        
+        // Setting properties
+        hr.setAssocId(1L);
+        hr.setName("John");
+        hr.setEmail("john.hr@example.com");
+        hr.setPassword("securePass");
+        
+        // Assertions to verify getters
+        assertEquals(1L, hr.getAssocId());
+        assertEquals("John", hr.getName());
+        assertEquals("john.hr@example.com", hr.getEmail());
+        assertEquals("securePass", hr.getPassword());
+    }
 }
 
 //Manager
