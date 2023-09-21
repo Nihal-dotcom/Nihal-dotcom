@@ -1,0 +1,67 @@
+package com.adp.eletter.service;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import com.adp.eletter.repository.EletterRepository;
+
+@SpringBootTest
+public class EletterServiceTest {
+
+    @Mock
+    private EletterRepository eletterRepository;
+
+    @InjectMocks
+    private EletterService eletterService;
+
+    @BeforeEach
+    public void setUp() {
+        // This initializes objects annotated with Mockito annotations
+        MockitoAnnotations.initMocks(this);
+    }
+
+    @Test
+    public void testSomeEletterServiceMethod() {
+        // Given
+        // some setup
+
+        // When
+        // some action, e.g., eletterService.someMethod();
+
+        // Then
+        // assertions, e.g., assertEquals(expectedValue, actualValue);
+    }
+}
+
+
+package com.adp.eletter.api;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.web.servlet.MockMvc;
+
+@SpringBootTest
+@AutoConfigureMockMvc
+public class EletterControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Test
+    public void testGetEletterEndpoint() throws Exception {
+        mockMvc.perform(get("/eletter/some-endpoint"))
+               .andExpect(status().isOk());
+    }
+}
