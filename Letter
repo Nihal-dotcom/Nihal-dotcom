@@ -203,3 +203,21 @@ public class ManagerTest {
         assertEquals("securePassword", manager.getPassword());
     }
 }
+
+//candidateException
+
+package com.adp.eletter.exception;
+
+public class CandidateException extends Exception{
+	public CandidateException() {
+		
+	}
+	
+	public CandidateException(String message) {
+		super(message);
+	}
+	
+	public CandidateException(String message, Throwable t) {
+		super(message,t);
+	}
+}
