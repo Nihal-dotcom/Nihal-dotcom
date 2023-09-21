@@ -244,17 +244,30 @@ public class CandidateExceptionTest {
 
 package com.adp.eletter.repository;
 
-import java.util.Optional;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.junit.jupiter.api.Test;
 
 import com.adp.eletter.entitiy.Candidate;
 
-@Repository
-public interface CandidateRepository extends JpaRepository<Candidate, Long > {
-	
-//	Optional<Candidate> findById(Integer id);
+@DataJpaTest
+public class CandidateRepositoryTest {
+
+    @Autowired
+    private CandidateRepository candidateRepository;
+
+    @Test
+    public void testSaveAndFindById() {
+        Candidate candidate = new Candidate();
+        // set candidate properties...
+
+        candidate = candidateRepository.save(candidate);
+        
+        assertTrue(candidateRepository.findById(candidate.getCandidateId()).isPresent());
+    }
 }
 
 
