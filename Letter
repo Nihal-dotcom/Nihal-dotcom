@@ -1,54 +1,42 @@
 package com.adp.eletter.service;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.stereotype.Service;
 
-import com.adp.eletter.entitiy.HR;
+public class TemplateServiceImplTest {
 
+    private TemplateServiceImpl templateService;
+    private ResourceLoader resourceLoader;
 
-@Service
-public class TemplateServiceImpl implements TemplateService {
-	
-	
-	private final  ResourceLoader resourceLoader;
-	
-	@Value("classpath:static/")
-	private Resource templateBasepath;
-	
-	
-	private final Map<String, String> templateIdToFileNameMap = new HashMap<>();
-	
-	
-	public TemplateServiceImpl(ResourceLoader resourceLoader) {
-		this.resourceLoader = resourceLoader;
-		intializeTemplateIdToFileNameMap();
-	}
+    @BeforeEach
+    public void setUp() {
+        resourceLoader = new DefaultResourceLoader();
+        templateService = new TemplateServiceImpl(resourceLoader);
+    }
 
-	private void intializeTemplateIdToFileNameMap() {
-		templateIdToFileNameMap.put("offerletter","offerletter.docx");
-	}
+    @Test
+    public void testGetTemplateName() {
+        String templateId = "offerletter";
+        String resultTemplateName = templateService.getTemplateName(templateId);
+        assertEquals(templateId, resultTemplateName, "The template name should match the provided templateId.");
+    }
 
-//	@Override
-//	public String loadTemplate(String templateFileName) {
-//		
-//		return null;
-//	}
+    @Test
+    public void testGetTemplateFileName() {
+        String templateId = "offerletter";
+        String resultFileName = templateService.getTemplateFileName(templateId);
+        assertNotNull(resultFileName, "Resultant file name should not be null.");
+        assertEquals("offerletter.docx", resultFileName, "The file name should match the expected value.");
+    }
 
-	@Override
-	public String getTemplateName(String templateId) {
-		
-		return templateId;
-	}
-
-	@Override
-	public String getTemplateFileName(String templateId) {
-	
-		return templateIdToFileNameMap.get(templateId);
-	}
-
+    @Test
+    public void testInvalidTemplateId() {
+        String templateId = "nonexistent";
+        String resultFileName = templateService.getTemplateFileName(templateId);
+        assertEquals(null, resultFileName, "For a nonexistent templateId, the file name should be null.");
+    }
 }
