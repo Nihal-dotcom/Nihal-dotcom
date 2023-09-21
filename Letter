@@ -1,51 +1,206 @@
 package com.adp.eletter.service;
 
-import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import java.util.Arrays;
-import java.util.Optional;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFRun;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.stereotype.Service;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
-import com.adp.eletter.dto.CandidateDTO;
 import com.adp.eletter.entitiy.Candidate;
+import com.adp.eletter.entitiy.Candidate.OfferLetterStatus;
+import com.adp.eletter.entitiy.HR;
 import com.adp.eletter.repository.CandidateRepository;
-import org.modelmapper.ModelMapper;
+import com.adp.eletter.repository.HRRepository;
 
-public class CandidateServiceImplTest {
+@Service
+public class HrServiceImpl implements HrService {
 
-    @Mock
-    private CandidateRepository candidateRepository;
+	
+	@Autowired
+	private HRRepository hrRepository;
+	
+	
+	@Autowired
+	private CandidateRepository candidateRepository;
+	
+	@Autowired
+	private CandidateServiceImpl candidateServiceImpl;
+	
+	
+	@Autowired
+	private TemplateServiceImpl templateServiceImpl;
+	
+	private static final String destinationPath = "C:\\Users\\thammisr\\Desktop\\batch2-eletter-ttfivee-backend-repo\\src\\main\\resources\\templates\\offerletterdocument.docx";
+	
+	@Override
+	public HR getHRById(Long assocId) {
+		HR hr = hrRepository.findById(assocId).orElse(null);
+		
+		if(hr!=null)
+			return hr;
+		return null;
+	}
 
-    @Mock
-    private ModelMapper modelMapper;
+	@Override
+	public HR updateProfile(Long assocId, HR updatedHR) {
+		HR hrExists = hrRepository.findById(assocId).orElse(null);
+		if(hrExists!=null) {
+			
+			hrExists.setAssocId(updatedHR.getAssocId());
+			hrExists.setAssocId(updatedHR.getAssocId());
+			hrExists.setEmail(updatedHR.getEmail());
+			hrExists.setName(updatedHR.getName());
+			hrExists.setPassword(updatedHR.getPassword());
+			
+			
+			return hrRepository.save(hrExists);
+		
+		}
+		return null;
+	}
 
-    @InjectMocks
-    private CandidateServiceImpl candidateService;
+//	@Override
+//	public List<Candidate> getCandidateAssignedToHR(Long assocId) {
+//		
+//		HR hr = hrRepository.findById(assocId).orElse(null);
+//		
+//		if(hr!=null) {
+//			List<Candidate> list = candidateServiceImpl.getCandidateByHRId(assocId);
+//		}
+//		
+//		return Collections.emptyList();
+//	}
 
-    @BeforeEach
-    public void setup() {
-        MockitoAnnotations.openMocks(this);
-    }
+//	@Override
+//	public boolean selectTemplateForCandidate(Long assocId, Long candidateId, String templateId) {
+//		
+//		HR hr = hrRepository.findById(assocId).orElse(null);
+//		if(hr!=null) {
+//		  
+//		Candidate candidate = candidateServiceImpl.getCandidateById(candidateId);
+//		
+//		if(candidate!=null) {
+//			// String templateFileName = templateServiceImpl.getTemplateFileName(templateId);
+//			
+//			candidate.setSelectedTemplateId(templateId);
+//			
+//			candidateRepository.save(candidate);
+//			
+//		    return true;
+//		}
+//		
+//		}
+//		return false;
+//	}
+//
+//	@Override
+//	public boolean generateOfferLetter(Long assocId, Long candidateId) {
+//		HR hr = hrRepository.findById(assocId).orElse(null);
+//		if(hr!=null) {
+//			Candidate candidate = candidateServiceImpl.getCandidateById(candidateId);
+//			if(candidate!=null) {
+//				
+//				
+//				boolean success = populate(candidate);
+//				
+//				if(success) {
+//					candidate.setOfferLetterStatus(OfferLetterStatus.PENDING);
+//					candidateRepository.save(candidate);
+//					
+//					return true;
+//				}
+//			}
+//		}
+//		return false;
+//	}
 
-    @Test
-    public void testGetAllCandidates() throws Exception {
-        when(candidateRepository.findAll()).thenReturn(Arrays.asList(new Candidate()));
+	private boolean populate(Candidate candidate) {
+	
+		//Map<String, String> placeholderMap = new HashMap<>();
+		try {
+			ClassPathResource fileResource = new ClassPathResource("./static/offerletter.docx");
+			FileInputStream templateInputStream = new FileInputStream(fileResource.getFile());
+			XWPFDocument document = new XWPFDocument(templateInputStream);
+			
+			Map<String,String> map = new HashMap<>();
+			map.put("{localDate}", "12-08-2023");
+			map.put("{name}", "rajkumar");
+			map.put("{company}","ADP" );
+			map.put("{pay}", "6,00,000");
+			map.put("{location}", "hyderabad");
+			
+			for(XWPFParagraph paragraph : document.getParagraphs()) {
+			
+				for(XWPFRun run : paragraph.getRuns()) {
+					String text = run.getText(0);
+					
+					//System.out.println(text);
+					
+				for(Map.Entry<String, String> m : map.entrySet()) {
+					if(text!=null) {
+						text = text.replace(m.getKey(),m.getValue());
+						//System.out.println(text);
+					}
+					
+			}
+					run.setText(text, 0);
+				
+				}
+				
+			}
+			FileOutputStream file = new FileOutputStream(destinationPath);
+			document.write(file);
+			file.close();
+			
+			File targetFile = new File(destinationPath);
+			if(targetFile.exists())
+			{
+				return true;
+			}
+			
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	
+	}
 
-        CandidateDTO mockDTO = new CandidateDTO();
-        when(modelMapper.map(any(Candidate.class), eq(CandidateDTO.class))).thenReturn(mockDTO);
+	@Override
+	public List<Candidate> getCandidateAssignedToHR(Long assocId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-        var candidates = candidateService.getAllCandidates();
+	@Override
+	public boolean selectTemplateForCandidate(Long assocId, Long candidateId, String templateId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 
-        assertNotNull(candidates);
-        assertFalse(candidates.isEmpty());
-        assertEquals(1, candidates.size());
-    }
+	@Override
+	public boolean generateOfferLetter(Long assocId, Long candidateId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 
-    // ... You can continue to write more tests for other methods ...
+	
+
+//	@Override
+//	public boolean storeGeneratedOfferLetter(Long assocId, Long candidateId, String offerLetterFilePath) {
+//		// TODO Auto-generated method stub
+//		return false;
+//	}
+	
+
 }
+
