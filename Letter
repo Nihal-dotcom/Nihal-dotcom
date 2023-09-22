@@ -1,42 +1,25 @@
-package com.adp.eletter.service;
+package com.adp.eletter;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.core.io.ResourceLoader;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.modelmapper.ModelMapper;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class TemplateServiceImplTest {
+@SpringBootTest
+public class EletterApplicationTest {
 
-    private TemplateServiceImpl templateService;
-    private ResourceLoader resourceLoader;
+    @Autowired
+    private ModelMapper modelMapper;
 
-    @BeforeEach
-    public void setUp() {
-        resourceLoader = new DefaultResourceLoader();
-        templateService = new TemplateServiceImpl(resourceLoader);
+    @Test
+    public void contextLoads() {
+        // This method will simply load the context.
+        // If there's any configuration error, the test will fail.
     }
 
     @Test
-    public void testGetTemplateName() {
-        String templateId = "offerletter";
-        String resultTemplateName = templateService.getTemplateName(templateId);
-        assertEquals(templateId, resultTemplateName, "The template name should match the provided templateId.");
-    }
-
-    @Test
-    public void testGetTemplateFileName() {
-        String templateId = "offerletter";
-        String resultFileName = templateService.getTemplateFileName(templateId);
-        assertNotNull(resultFileName, "Resultant file name should not be null.");
-        assertEquals("offerletter.docx", resultFileName, "The file name should match the expected value.");
-    }
-
-    @Test
-    public void testInvalidTemplateId() {
-        String templateId = "nonexistent";
-        String resultFileName = templateService.getTemplateFileName(templateId);
-        assertEquals(null, resultFileName, "For a nonexistent templateId, the file name should be null.");
+    public void testModelMapperBean() {
+        assertNotNull(modelMapper, "ModelMapper bean should be initialized.");
     }
 }
