@@ -1,136 +1,28 @@
-package com.adp.eletter.api;
-
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
-
-import com.adp.eletter.dto.CandidateDTO;
-import com.adp.eletter.entitiy.Candidate;
-import com.adp.eletter.entitiy.Candidate.OfferLetterStatus;
-import com.adp.eletter.service.CandidateService;
-import com.adp.eletter.service.CandidateServiceImpl;
-
-@RestController
-@RequestMapping("api/candidate")
-@CrossOrigin
-public class CandidateController {
-	
-	@Autowired(required=false)
-	private CandidateService candidateService;
-	
-//	@PostMapping("/create")
-//	public ResponseEntity<Candidate> createCandidate(@RequestBody Candidate candidate){
-//		try {
-//			Candidate newcandidate = candidateService.CreateCandidate(candidate);
-//			return new ResponseEntity<>(newcandidate,HttpStatus.OK);
-//			
-//		}catch(Exception e) {
-//			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
-//		}
-//	}
-	
-	@GetMapping("/all")
-	public ResponseEntity<List<CandidateDTO>> getAllCandidate(){
-		try {
-			List<CandidateDTO> candidateDTOList = candidateService.getAllCandidates();
-			return new ResponseEntity<>(candidateDTOList,HttpStatus.OK);
-		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
-		}
-	}
-	
-	@GetMapping("/{id}")
-	public ResponseEntity<CandidateDTO> getCandidateById(@PathVariable Long id){
-		try {
-			CandidateDTO candidateDTO = candidateService.getCandidateById(id);
-			return new ResponseEntity<>(candidateDTO,HttpStatus.OK);
-		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
-		}
-	}
-	
-	
-	@GetMapping("/assignedHr/{id}")
-	public ResponseEntity<List<CandidateDTO>> getCandidateByHRId(@PathVariable String id){
-		try {
-			List<CandidateDTO>  candidateDTOList = candidateService.getCandidateByHRId(id);
-			return new ResponseEntity<>(candidateDTOList ,HttpStatus.OK);
-		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
-		}
-	}
-	
-	@GetMapping("/manager/{id}")
-	public ResponseEntity<List<CandidateDTO>> getCandidateByManagerId(@PathVariable String id){
-		try {
-			List<CandidateDTO>  candidateDTOList = candidateService.getCandidateByManagerId(id);
-			return new ResponseEntity<>(candidateDTOList ,HttpStatus.OK);
-		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
-		}
-	}
-	
-	@GetMapping("/status/new")
-	public ResponseEntity<List<CandidateDTO>> getCandidateWithStatusNew(){
-		try {
-			List<CandidateDTO>  candidateDTOList = candidateService.getCandidateWithNewStatus();
-			return new ResponseEntity<>(candidateDTOList ,HttpStatus.OK);
-		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
-		}
-	}
-	
-	
-	@GetMapping("/status/pending")
-	public ResponseEntity<List<CandidateDTO>> getCandidateWithStatusPending(){
-		try {
-			List<CandidateDTO>  candidateDTOList = candidateService.getCandidateWithPendingStatus();
-			return new ResponseEntity<>(candidateDTOList ,HttpStatus.OK);
-		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
-		}
-	}
-	
-	
-	@GetMapping("/status/approved")
-	public ResponseEntity<List<CandidateDTO>> getCandidateWithStatusApproved(){
-		try {
-			List<CandidateDTO>  candidateDTOList = candidateService.getCandidateWithApprovedStatus();
-			return new ResponseEntity<>(candidateDTOList ,HttpStatus.OK);
-		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
-		}
-	}
-	
-	@GetMapping("/status/rejected")
-	public ResponseEntity<List<CandidateDTO>> getCandidateWithStatusRejected(){
-		try {
-			List<CandidateDTO>  candidateDTOList = candidateService.getCandidateWithRejectedStatus();
-			return new ResponseEntity<>(candidateDTOList ,HttpStatus.OK);
-		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
-		}
-	}
-	
-	@PutMapping("/update-status/{id}/{status}")
-	public ResponseEntity<CandidateDTO> updateCandidateStatus(@PathVariable Long id, @PathVariable OfferLetterStatus status){
-		try {
-			CandidateDTO  candidateDTO = candidateService.updateOfferLetterStatus(id,status);
-			return new ResponseEntity<>(candidateDTO ,HttpStatus.OK);
-		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
-		}
-	}
-}
-
+[[1;31mERROR[m] [1;31mFailures: [m
+[[1;31mERROR[m] [1;31m  CandidateControllerTest.testGetAllCandidate:43 Status expected:<200> but was:<400>[m
+[[1;31mERROR[m] [1;31mErrors: [m
+[[1;31mERROR[m] [1;31m  CandidateRepositoryTest.testSaveAndFindById » IllegalState Failed to load ApplicationContext for [MergedContextConfiguration@2769d577 testClass = com.adp.eletter.repository.CandidateRepositoryTest, locations = [], classes = [com.adp.eletter.EletterApplication], contextInitializerClasses = [], activeProfiles = [], propertySourceLocations = [], propertySourceProperties = ["org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTestContextBootstrapper=true"], contextCustomizers = [[ImportsContextCustomizer@25297d52 key = [org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration, org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration, org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration, org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration, org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration, org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration, org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration, org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration, org.springframework.boot.autoconfigure.sql.init.SqlInitializationAutoConfiguration, org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration, org.springframework.boot.test.autoconfigure.jdbc.TestDatabaseAutoConfiguration, org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManagerAutoConfiguration]], org.springframework.boot.test.context.filter.ExcludeFilterContextCustomizer@5e1fa5b1, org.springframework.boot.test.json.DuplicateJsonObjectContextCustomizerFactory$DuplicateJsonObjectContextCustomizer@3e821657, org.springframework.boot.test.mock.mockito.MockitoContextCustomizer@0, org.springframework.boot.test.autoconfigure.OverrideAutoConfigurationContextCustomizerFactory$DisableAutoConfigurationContextCustomizer@7e7b159b, org.springframework.boot.test.autoconfigure.actuate.observability.ObservabilityContextCustomizerFactory$DisableObservabilityContextCustomizer@1f, org.springframework.boot.test.autoconfigure.filter.TypeExcludeFiltersContextCustomizer@351584c0, org.springframework.boot.test.autoconfigure.properties.PropertyMappingContextCustomizer@eacbce86, org.springframework.boot.test.autoconfigure.web.servlet.WebDriverContextCustomizer@3f390d63, org.springframework.boot.test.context.SpringBootTestAnnotation@ae8992bc], contextLoader = org.springframework.boot.test.context.SpringBootContextLoader, parent = null][m
+[[1;31mERROR[m] [1;31m  HRRepositoryTest.testSaveAndFindById » IllegalState Failed to load ApplicationContext for [MergedContextConfiguration@1cd97ebe testClass = com.adp.eletter.repository.HRRepositoryTest, locations = [], classes = [com.adp.eletter.EletterApplication], contextInitializerClasses = [], activeProfiles = [], propertySourceLocations = [], propertySourceProperties = ["org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTestContextBootstrapper=true"], contextCustomizers = [[ImportsContextCustomizer@6431ab21 key = [org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration, org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration, org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration, org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration, org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration, org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration, org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration, org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration, org.springframework.boot.autoconfigure.sql.init.SqlInitializationAutoConfiguration, org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration, org.springframework.boot.test.autoconfigure.jdbc.TestDatabaseAutoConfiguration, org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManagerAutoConfiguration]], org.springframework.boot.test.context.filter.ExcludeFilterContextCustomizer@5e1fa5b1, org.springframework.boot.test.json.DuplicateJsonObjectContextCustomizerFactory$DuplicateJsonObjectContextCustomizer@3e821657, org.springframework.boot.test.mock.mockito.MockitoContextCustomizer@0, org.springframework.boot.test.autoconfigure.OverrideAutoConfigurationContextCustomizerFactory$DisableAutoConfigurationContextCustomizer@7e7b159b, org.springframework.boot.test.autoconfigure.actuate.observability.ObservabilityContextCustomizerFactory$DisableObservabilityContextCustomizer@1f, org.springframework.boot.test.autoconfigure.filter.TypeExcludeFiltersContextCustomizer@351584c0, org.springframework.boot.test.autoconfigure.properties.PropertyMappingContextCustomizer@eacbce86, org.springframework.boot.test.autoconfigure.web.servlet.WebDriverContextCustomizer@3f390d63, org.springframework.boot.test.context.SpringBootTestAnnotation@ae8992bc], contextLoader = org.springframework.boot.test.context.SpringBootContextLoader, parent = null][m
+[[1;31mERROR[m] [1;31m  ManagerRepositoryTest.testSaveAndFindById » IllegalState Failed to load ApplicationContext for [MergedContextConfiguration@3d3362f5 testClass = com.adp.eletter.repository.ManagerRepositoryTest, locations = [], classes = [com.adp.eletter.EletterApplication], contextInitializerClasses = [], activeProfiles = [], propertySourceLocations = [], propertySourceProperties = ["org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTestContextBootstrapper=true"], contextCustomizers = [[ImportsContextCustomizer@1e717745 key = [org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration, org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration, org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration, org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration, org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration, org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration, org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration, org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration, org.springframework.boot.autoconfigure.sql.init.SqlInitializationAutoConfiguration, org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration, org.springframework.boot.test.autoconfigure.jdbc.TestDatabaseAutoConfiguration, org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManagerAutoConfiguration]], org.springframework.boot.test.context.filter.ExcludeFilterContextCustomizer@5e1fa5b1, org.springframework.boot.test.json.DuplicateJsonObjectContextCustomizerFactory$DuplicateJsonObjectContextCustomizer@3e821657, org.springframework.boot.test.mock.mockito.MockitoContextCustomizer@0, org.springframework.boot.test.autoconfigure.OverrideAutoConfigurationContextCustomizerFactory$DisableAutoConfigurationContextCustomizer@7e7b159b, org.springframework.boot.test.autoconfigure.actuate.observability.ObservabilityContextCustomizerFactory$DisableObservabilityContextCustomizer@1f, org.springframework.boot.test.autoconfigure.filter.TypeExcludeFiltersContextCustomizer@351584c0, org.springframework.boot.test.autoconfigure.properties.PropertyMappingContextCustomizer@eacbce86, org.springframework.boot.test.autoconfigure.web.servlet.WebDriverContextCustomizer@3f390d63, org.springframework.boot.test.context.SpringBootTestAnnotation@ae8992bc], contextLoader = org.springframework.boot.test.context.SpringBootContextLoader, parent = null][m
+[[1;31mERROR[m] [1;31m  CandidateServiceImplTest.whenInValidID_thenCandidateShouldBeFound:65 » Candidate Candidate Not available[m
+[[1;31mERROR[m] [1;31m  CandidateServiceImplTest.whenValidID_thenCandidateShouldBeFound:56 » Candidate Candidate Not available[m
+[[1;34mINFO[m] 
+[[1;31mERROR[m] [1;31mTests run: 23, Failures: 1, Errors: 5, Skipped: 0[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] [1;31mBUILD FAILURE[m
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] Total time:  01:50 min
+[[1;34mINFO[m] Finished at: 2023-09-23T16:48:58+05:30
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;31mERROR[m] Failed to execute goal [32morg.apache.maven.plugins:maven-surefire-plugin:3.0.0:test[m [1m(default-test)[m on project [36meletter[m: [1;31mThere are test failures.[m
+[[1;31mERROR[m] [1;31m[m
+[[1;31mERROR[m] [1;31mPlease refer to C:\Users\sinhanih\Documents\adpws\batch2-eletter-ttfivee-backend-repo\target\surefire-reports for the individual test results.[m
+[[1;31mERROR[m] [1;31mPlease refer to dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.[m
+[[1;31mERROR[m] -> [1m[Help 1][m
+[[1;31mERROR[m] 
+[[1;31mERROR[m] To see the full stack trace of the errors, re-run Maven with the [1m-e[m switch.
+[[1;31mERROR[m] Re-run Maven using the [1m-X[m switch to enable full debug logging.
+[[1;31mERROR[m] 
+[[1;31mERROR[m] For more information about the errors and possible solutions, please read the following articles:
+[[1;31mERROR[m] [1m[Help 1][m http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
