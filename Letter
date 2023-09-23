@@ -1,18 +1,339 @@
-@Test
-public void testGetCandidateById() throws CandidateException {
-    Long candidateId = 1L;
-    Candidate candidate = new Candidate();
-    // Set candidate's attributes if necessary.
-    CandidateDTO candidateDTO = new CandidateDTO();
-    // Set candidateDTO's attributes if necessary.
-    
-    when(candidateRepository.findById(candidateId)).thenReturn(Optional.of(candidate));
-    
-    // Note: No 'Optional' wrapping here.
-    when(modelMapper.map(candidate, CandidateDTO.class)).thenReturn(candidateDTO);
+package com.adp.eletter.service;
 
-    CandidateDTO result = candidateService.getCandidateById(candidateId);
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
-    assertNotNull(result); // Ensure result is not null.
-    assertEquals(candidateDTO, result); // Ensure expected and actual results match.
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFPicture;
+import org.apache.poi.xwpf.usermodel.XWPFRun;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.stereotype.Service;
+
+import com.adp.eletter.dto.CandidateDTO;
+import com.adp.eletter.entitiy.Candidate;
+import com.adp.eletter.entitiy.Candidate.OfferLetterStatus;
+import com.adp.eletter.entitiy.HR;
+import com.adp.eletter.exception.CandidateException;
+import com.adp.eletter.repository.CandidateRepository;
+import com.adp.eletter.repository.HRRepository;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfWriter;
+
+import jakarta.servlet.http.HttpServletResponse;
+
+@Service
+public class HrServiceImpl implements HrService {
+
+
+	@Autowired
+	private HRRepository hrRepository;
+
+
+	@Autowired
+	private CandidateRepository candidateRepository;
+
+	@Autowired
+	private CandidateServiceImpl candidateServiceImpl;
+
+
+	@Autowired
+	private TemplateServiceImpl templateServiceImpl;
+
+
+
+	private static final String destinationPath = "C:\\Users\\allankis\\OneDrive - Automatic Data Processing Inc\\Documents\\adpws\\batch2-eletter-ttfivee-backend-repo\\src\\main\\resources\\static\\assets\\2.docx.docx";
+
+	@Override
+	public HR getHRById(Long assocId) {
+		HR hr = hrRepository.findById(assocId).orElse(null);
+
+		if(hr!=null)
+			return hr;
+		return null;
+	}
+
+	@Override
+	public HR updateProfile(Long assocId, HR updatedHR) {
+		HR hrExists = hrRepository.findById(assocId).orElse(null);
+		if(hrExists!=null) {
+
+			hrExists.setAssocId(updatedHR.getAssocId());
+			hrExists.setAssocId(updatedHR.getAssocId());
+			hrExists.setEmail(updatedHR.getEmail());
+			hrExists.setName(updatedHR.getName());
+			hrExists.setPassword(updatedHR.getPassword());
+
+
+			return hrRepository.save(hrExists);
+
+		}
+		return null;
+	}
+
+	//	@Override
+	//	public List<Candidate> getCandidateAssignedToHR(Long assocId) {
+	//		
+	//		HR hr = hrRepository.findById(assocId).orElse(null);
+	//		
+	//		if(hr!=null) {
+	//			List<Candidate> list = candidateServiceImpl.getCandidateByHRId(assocId);
+	//		}
+	//		
+	//		return Collections.emptyList();
+	//	}
+
+	//	@Override
+	//	public boolean selectTemplateForCandidate(Long assocId, Long candidateId, String templateId) {
+	//		
+	//		HR hr = hrRepository.findById(assocId).orElse(null);
+	//		if(hr!=null) {
+	//		  
+	//		Candidate candidate = candidateServiceImpl.getCandidateById(candidateId);
+	//		
+	//		if(candidate!=null) {
+	//			// String templateFileName = templateServiceImpl.getTemplateFileName(templateId);
+	//			
+	//			candidate.setSelectedTemplateId(templateId);
+	//			
+	//			candidateRepository.save(candidate);
+	//			
+	//		    return true;
+	//		}
+	//		
+	//		}
+	//		return false;
+	//	}
+	//
+	//	@Override
+	//	public boolean generateOfferLetter(Long assocId, Long candidateId) {
+	//		HR hr = hrRepository.findById(assocId).orElse(null);
+	//		if(hr!=null) {
+	//			Candidate candidate = candidateServiceImpl.getCandidateById(candidateId);
+	//			if(candidate!=null) {
+	//				
+	//				
+	//				boolean success = populate(candidate);
+	//				
+	//				if(success) {
+	//					candidate.setOfferLetterStatus(OfferLetterStatus.PENDING);
+	//					candidateRepository.save(candidate);
+	//					
+	//					return true;
+	//				}
+	//			}
+	//		}
+	//		return false;
+	//	}
+
+	@Override
+	public String populate(Long candidateId) throws CandidateException {
+
+		CandidateDTO candidate = candidateServiceImpl.getCandidateById(candidateId);
+		//Map<String, String> placeholderMap = new HashMap<>();
+		try {
+
+
+//			ClassPathResource fileResource = new ClassPathResource("./static/assets/offerLetter.docx");
+//			FileInputStream templateInputStream = new FileInputStream(fileResource.getFile());
+//			XWPFDocument document = new XWPFDocument(templateInputStream);
+//
+//			Map<String,String> map = new HashMap<>();
+//			String present_date =java.time.LocalDate.now().toString();
+//			System.out.println(present_date);
+//			map.put("{present_date}", present_date );
+//			map.put("{name}", candidate.getFirstName()+" "+candidate.getLastName());
+//			map.put("{role}","MemberTechnical");
+//			map.put("{date}","01-10-2023");
+//			map.put("{company}","ADP");
+//			map.put("{pay}", candidate.getPay().toString());
+//			map.put("{location}", "Hyderabad");
+//
+//			for(XWPFParagraph paragraph : document.getParagraphs()) {
+//
+//				for(XWPFRun run : paragraph.getRuns()) {
+//					String text = run.getText(0);
+//					if (text != null && !text.isEmpty()) {
+//					for(Map.Entry<String, String> m : map.entrySet()) {
+//						if(text!=null) {
+//							text = text.replace(m.getKey(),m.getValue());
+//						
+//						}
+//					}
+//					run.setText(text, 0);
+				//}
+//					for (XWPFPicture picture : run.getEmbeddedPictures()) {
+//						byte[] bytes = picture.getPictureData().getData();
+//						Image image = Image.getInstance(bytes);
+//						
+//					run.set
+//					}
+//
+//			}
+//			FileOutputStream file = new FileOutputStream(destinationPath);
+//			document.write(file);
+//			file.close();
+
+			File targetFile = new File(destinationPath);
+			if(targetFile.exists())
+			{
+
+
+
+
+				// Load the DOCX file
+				FileInputStream fis = new FileInputStream(destinationPath);
+				XWPFDocument document1 = new XWPFDocument(fis);
+
+				// Create a PDF document
+				Document pdfDocument = new Document();
+				String pdfPath="C:\\Users\\allankis\\OneDrive - Automatic Data Processing Inc\\Documents\\adpws\\batch2-eletter-ttfivee-backend-repo\\src\\main\\resources\\templates\\output71.pdf";
+				PdfWriter.getInstance(pdfDocument, new FileOutputStream(pdfPath));
+				pdfDocument.open();
+
+				// Process each paragraph
+				for (XWPFParagraph paragraph1 : document1.getParagraphs()) {
+					// Iterate through the runs (text and images) within the paragraph
+					for (XWPFRun run : paragraph1.getRuns()) {
+						// Extract and add text to PDF
+						String text = run.getText(0);
+						if (text != null && !text.isEmpty()) {
+							pdfDocument.add(new Paragraph(text));
+						}
+
+						// Extract and add images to PDF
+						for (XWPFPicture picture : run.getEmbeddedPictures()) {
+							byte[] bytes = picture.getPictureData().getData();
+							Image image = Image.getInstance(bytes);
+
+							pdfDocument.add(image);
+						}
+					}
+				}
+
+				pdfDocument.close();
+				fis.close();
+				return pdfPath;
+			}
+
+		}
+
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+
+
+	}
+
+	//	@Override
+	//	public List<Candidate> getCandidateAssignedToHR(Long assocId) {
+	//		// TODO Auto-generated method stub
+	//		return null;
+	//	}
+	//
+	//	@Override
+	//	public boolean selectTemplateForCandidate(Long assocId, Long candidateId, String templateId) {
+	//		// TODO Auto-generated method stub
+	//		return false;
+	//	}
+
+	@Override
+	public boolean generateOfferLetter(Long assocId, Long candidateId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+
+	@Override
+	public boolean storeGeneratedOfferLetter ( Long candidateId,HttpServletResponse response)  throws IOException, DocumentException {
+
+		//String path=populate(candidateId);
+		//		try {
+		//			// Load the DOCX file
+		//			FileInputStream fis = new FileInputStream(path);
+		//			XWPFDocument document = new XWPFDocument(fis);
+		//
+		//			// Create a PDF document
+		//			Document pdfDocument = new Document();
+		//			PdfWriter.getInstance(pdfDocument, new FileOutputStream("C:\\Users\\allankis\\OneDrive - Automatic Data Processing Inc\\Documents\\adpws\\sb-rest-app\\src\\main\\resources\\templates\\output.pdf"));
+		//			pdfDocument.open();
+		//
+		//			// Process each paragraph
+		//			for (XWPFParagraph paragraph : document.getParagraphs()) {
+		//				// Iterate through the runs (text and images) within the paragraph
+		//				for (XWPFRun run : paragraph.getRuns()) {
+		//					// Extract and add text to PDF
+		//					String text = run.getText(0);
+		//					if (text != null && !text.isEmpty()) {
+		//						pdfDocument.add(new Paragraph(text));
+		//					}
+		//
+		//					// Extract and add images to PDF
+		//					for (XWPFPicture picture : run.getEmbeddedPictures()) {
+		//						byte[] bytes = picture.getPictureData().getData();
+		//						Image image = Image.getInstance(bytes);
+		//
+		//						pdfDocument.add(image);
+		//					}
+		//				}
+		//			}
+		//
+		//			pdfDocument.close();
+		//			fis.close();
+		//
+		//			response.setContentType("application/pdf");
+		//			response.setHeader("content-Disposition","attachment; filename = output.pdf");
+		//
+		//			InputStream in = new FileInputStream("C:\\Users\\allankis\\OneDrive - Automatic Data Processing Inc\\Documents\\adpws\\sb-rest-app\\src\\main\\resources\\templates\\output.pdf"); 
+		//			OutputStream out = response.getOutputStream();
+		//			byte[] buffer = new byte[1024];
+		//
+		//			int bytesRead; 
+		//			while((bytesRead = in.read(buffer)) !=-1){
+		//				out.write(buffer,0,bytesRead);
+		//			}
+		//
+		//
+		//			System.out.println("Conversion complete.");
+		//		}
+		//		catch (Exception e) {
+		//			e.printStackTrace();
+		//		}
+
+
+
+
+
+
+		return true;
+	}
+
+	@Override
+	public List<Candidate> getCandidateAssignedToHR(Long assocId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean selectTemplateForCandidate(Long assocId, Long candidateId, String templateId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
 }
