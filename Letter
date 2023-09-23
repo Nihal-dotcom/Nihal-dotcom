@@ -1,28 +1,70 @@
-[[1;31mERROR[m] [1;31mFailures: [m
-[[1;31mERROR[m] [1;31m  CandidateControllerTest.testGetAllCandidate:43 Status expected:<200> but was:<400>[m
-[[1;31mERROR[m] [1;31mErrors: [m
-[[1;31mERROR[m] [1;31m  CandidateRepositoryTest.testSaveAndFindById » IllegalState Failed to load ApplicationContext for [MergedContextConfiguration@2769d577 testClass = com.adp.eletter.repository.CandidateRepositoryTest, locations = [], classes = [com.adp.eletter.EletterApplication], contextInitializerClasses = [], activeProfiles = [], propertySourceLocations = [], propertySourceProperties = ["org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTestContextBootstrapper=true"], contextCustomizers = [[ImportsContextCustomizer@25297d52 key = [org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration, org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration, org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration, org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration, org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration, org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration, org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration, org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration, org.springframework.boot.autoconfigure.sql.init.SqlInitializationAutoConfiguration, org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration, org.springframework.boot.test.autoconfigure.jdbc.TestDatabaseAutoConfiguration, org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManagerAutoConfiguration]], org.springframework.boot.test.context.filter.ExcludeFilterContextCustomizer@5e1fa5b1, org.springframework.boot.test.json.DuplicateJsonObjectContextCustomizerFactory$DuplicateJsonObjectContextCustomizer@3e821657, org.springframework.boot.test.mock.mockito.MockitoContextCustomizer@0, org.springframework.boot.test.autoconfigure.OverrideAutoConfigurationContextCustomizerFactory$DisableAutoConfigurationContextCustomizer@7e7b159b, org.springframework.boot.test.autoconfigure.actuate.observability.ObservabilityContextCustomizerFactory$DisableObservabilityContextCustomizer@1f, org.springframework.boot.test.autoconfigure.filter.TypeExcludeFiltersContextCustomizer@351584c0, org.springframework.boot.test.autoconfigure.properties.PropertyMappingContextCustomizer@eacbce86, org.springframework.boot.test.autoconfigure.web.servlet.WebDriverContextCustomizer@3f390d63, org.springframework.boot.test.context.SpringBootTestAnnotation@ae8992bc], contextLoader = org.springframework.boot.test.context.SpringBootContextLoader, parent = null][m
-[[1;31mERROR[m] [1;31m  HRRepositoryTest.testSaveAndFindById » IllegalState Failed to load ApplicationContext for [MergedContextConfiguration@1cd97ebe testClass = com.adp.eletter.repository.HRRepositoryTest, locations = [], classes = [com.adp.eletter.EletterApplication], contextInitializerClasses = [], activeProfiles = [], propertySourceLocations = [], propertySourceProperties = ["org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTestContextBootstrapper=true"], contextCustomizers = [[ImportsContextCustomizer@6431ab21 key = [org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration, org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration, org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration, org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration, org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration, org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration, org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration, org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration, org.springframework.boot.autoconfigure.sql.init.SqlInitializationAutoConfiguration, org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration, org.springframework.boot.test.autoconfigure.jdbc.TestDatabaseAutoConfiguration, org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManagerAutoConfiguration]], org.springframework.boot.test.context.filter.ExcludeFilterContextCustomizer@5e1fa5b1, org.springframework.boot.test.json.DuplicateJsonObjectContextCustomizerFactory$DuplicateJsonObjectContextCustomizer@3e821657, org.springframework.boot.test.mock.mockito.MockitoContextCustomizer@0, org.springframework.boot.test.autoconfigure.OverrideAutoConfigurationContextCustomizerFactory$DisableAutoConfigurationContextCustomizer@7e7b159b, org.springframework.boot.test.autoconfigure.actuate.observability.ObservabilityContextCustomizerFactory$DisableObservabilityContextCustomizer@1f, org.springframework.boot.test.autoconfigure.filter.TypeExcludeFiltersContextCustomizer@351584c0, org.springframework.boot.test.autoconfigure.properties.PropertyMappingContextCustomizer@eacbce86, org.springframework.boot.test.autoconfigure.web.servlet.WebDriverContextCustomizer@3f390d63, org.springframework.boot.test.context.SpringBootTestAnnotation@ae8992bc], contextLoader = org.springframework.boot.test.context.SpringBootContextLoader, parent = null][m
-[[1;31mERROR[m] [1;31m  ManagerRepositoryTest.testSaveAndFindById » IllegalState Failed to load ApplicationContext for [MergedContextConfiguration@3d3362f5 testClass = com.adp.eletter.repository.ManagerRepositoryTest, locations = [], classes = [com.adp.eletter.EletterApplication], contextInitializerClasses = [], activeProfiles = [], propertySourceLocations = [], propertySourceProperties = ["org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTestContextBootstrapper=true"], contextCustomizers = [[ImportsContextCustomizer@1e717745 key = [org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration, org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration, org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration, org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration, org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration, org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration, org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration, org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration, org.springframework.boot.autoconfigure.sql.init.SqlInitializationAutoConfiguration, org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration, org.springframework.boot.test.autoconfigure.jdbc.TestDatabaseAutoConfiguration, org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManagerAutoConfiguration]], org.springframework.boot.test.context.filter.ExcludeFilterContextCustomizer@5e1fa5b1, org.springframework.boot.test.json.DuplicateJsonObjectContextCustomizerFactory$DuplicateJsonObjectContextCustomizer@3e821657, org.springframework.boot.test.mock.mockito.MockitoContextCustomizer@0, org.springframework.boot.test.autoconfigure.OverrideAutoConfigurationContextCustomizerFactory$DisableAutoConfigurationContextCustomizer@7e7b159b, org.springframework.boot.test.autoconfigure.actuate.observability.ObservabilityContextCustomizerFactory$DisableObservabilityContextCustomizer@1f, org.springframework.boot.test.autoconfigure.filter.TypeExcludeFiltersContextCustomizer@351584c0, org.springframework.boot.test.autoconfigure.properties.PropertyMappingContextCustomizer@eacbce86, org.springframework.boot.test.autoconfigure.web.servlet.WebDriverContextCustomizer@3f390d63, org.springframework.boot.test.context.SpringBootTestAnnotation@ae8992bc], contextLoader = org.springframework.boot.test.context.SpringBootContextLoader, parent = null][m
-[[1;31mERROR[m] [1;31m  CandidateServiceImplTest.whenInValidID_thenCandidateShouldBeFound:65 » Candidate Candidate Not available[m
-[[1;31mERROR[m] [1;31m  CandidateServiceImplTest.whenValidID_thenCandidateShouldBeFound:56 » Candidate Candidate Not available[m
-[[1;34mINFO[m] 
-[[1;31mERROR[m] [1;31mTests run: 23, Failures: 1, Errors: 5, Skipped: 0[m
-[[1;34mINFO[m] 
-[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
-[[1;34mINFO[m] [1;31mBUILD FAILURE[m
-[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
-[[1;34mINFO[m] Total time:  01:50 min
-[[1;34mINFO[m] Finished at: 2023-09-23T16:48:58+05:30
-[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
-[[1;31mERROR[m] Failed to execute goal [32morg.apache.maven.plugins:maven-surefire-plugin:3.0.0:test[m [1m(default-test)[m on project [36meletter[m: [1;31mThere are test failures.[m
-[[1;31mERROR[m] [1;31m[m
-[[1;31mERROR[m] [1;31mPlease refer to C:\Users\sinhanih\Documents\adpws\batch2-eletter-ttfivee-backend-repo\target\surefire-reports for the individual test results.[m
-[[1;31mERROR[m] [1;31mPlease refer to dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.[m
-[[1;31mERROR[m] -> [1m[Help 1][m
-[[1;31mERROR[m] 
-[[1;31mERROR[m] To see the full stack trace of the errors, re-run Maven with the [1m-e[m switch.
-[[1;31mERROR[m] Re-run Maven using the [1m-X[m switch to enable full debug logging.
-[[1;31mERROR[m] 
-[[1;31mERROR[m] For more information about the errors and possible solutions, please read the following articles:
-[[1;31mERROR[m] [1m[Help 1][m http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
+package com.adp.eletter.service;
+
+import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.Arrays;
+import java.util.Optional;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import com.adp.eletter.dto.CandidateDTO;
+import com.adp.eletter.entitiy.Candidate;
+import com.adp.eletter.exception.CandidateException;
+import com.adp.eletter.repository.CandidateRepository;
+import org.modelmapper.ModelMapper;
+
+public class CandidateServiceImplTest {
+
+    @Mock
+    private CandidateRepository candidateRepository;
+
+    @Mock
+    private ModelMapper modelMapper;
+
+    @InjectMocks
+    private CandidateServiceImpl candidateService;
+
+    @BeforeEach
+    public void setup() {
+        MockitoAnnotations.openMocks(this);
+    }
+
+    @Test
+    public void testGetAllCandidates() throws Exception {
+        when(candidateRepository.findAll()).thenReturn(Arrays.asList(new Candidate()));
+
+        CandidateDTO mockDTO = new CandidateDTO();
+        when(modelMapper.map(any(Candidate.class), eq(CandidateDTO.class))).thenReturn(mockDTO);
+
+        var candidates = candidateService.getAllCandidates();
+
+        assertNotNull(candidates);
+        assertFalse(candidates.isEmpty());
+        assertEquals(1, candidates.size());
+    }
+
+
+    @Test
+    public void whenValidID_thenCandidateShouldBeFound() throws CandidateException {
+        Long id=12l;
+        CandidateDTO found=candidateService.getCandidateById(id);
+        assertThat(found.getCandidateId()).isEqualTo(id);
+        
+        
+    }
+
+    @Test
+    public void whenInValidID_thenCandidateShouldBeFound() throws CandidateException {
+        Long id=127l;
+        CandidateDTO found=candidateService.getCandidateById(id);
+        assertThat(found.getCandidateId()).isNotEqualTo(id);
+        
+        
+    }
+}
