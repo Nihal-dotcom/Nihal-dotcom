@@ -78,3 +78,22 @@ public class CandidateServiceImplTest {
     // You can continue to add more tests for other methods in a similar manner
 
 }
+
+
+
+@Test
+public void testGetCandidateById() throws CandidateException {
+    Long candidateId = 1L;
+    Candidate candidate = new Candidate();
+    // Set candidate's attributes if necessary.
+    CandidateDTO candidateDTO = new CandidateDTO();
+    // Set candidateDTO's attributes if necessary.
+    
+    when(candidateRepository.findById(candidateId)).thenReturn(Optional.of(candidate));
+    when(modelMapper.map(candidate, CandidateDTO.class)).thenReturn(candidateDTO);
+
+    CandidateDTO result = candidateService.getCandidateById(candidateId);
+
+    assertNotNull(result); // Ensure result is not null.
+    assertEquals(candidateDTO, result); // Ensure expected and actual results match.
+}
