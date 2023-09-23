@@ -1,86 +1,3 @@
-package com.adp.eletter.service;
-
-import com.adp.eletter.dto.CandidateDTO;
-import com.adp.eletter.entitiy.Candidate;
-import com.adp.eletter.repository.CandidateRepository;
-import com.adp.eletter.exception.CandidateException;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.ModelMapper;
-
-import java.util.Optional;
-import java.util.Arrays;
-import java.util.Collections;
-
-import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
-
-@ExtendWith(MockitoExtension.class)
-public class CandidateServiceImplTest {
-
-    @Mock
-    private CandidateRepository candidateRepository;
-
-    @Mock
-    private ModelMapper modelMapper;
-
-    @InjectMocks
-    private CandidateServiceImpl candidateService;
-
-    @Test
-    public void testGetAllCandidates() throws CandidateException {
-        Candidate candidate = new Candidate();
-        CandidateDTO candidateDTO = new CandidateDTO();
-        when(candidateRepository.findAll()).thenReturn(Collections.singletonList(candidate));
-        when(modelMapper.map(candidate, CandidateDTO.class)).thenReturn(candidateDTO);
-
-        List<CandidateDTO> result = candidateService.getAllCandidates();
-
-        assertEquals(1, result.size());
-        assertEquals(candidateDTO, result.get(0));
-    }
-
-    @Test
-    public void testGetAllCandidatesEmptyList() {
-        when(candidateRepository.findAll()).thenReturn(Collections.emptyList());
-
-        assertThrows(CandidateException.class, () -> {
-            candidateService.getAllCandidates();
-        });
-    }
-
-    @Test
-    public void testGetCandidateById() throws CandidateException {
-        Long candidateId = 1L;
-        Candidate candidate = new Candidate();
-        CandidateDTO candidateDTO = new CandidateDTO();
-        when(candidateRepository.findById(candidateId)).thenReturn(Optional.of(candidate));
-        when(modelMapper.map(candidate, CandidateDTO.class)).thenReturn(candidateDTO);
-
-        CandidateDTO result = candidateService.getCandidateById(candidateId);
-
-        assertEquals(candidateDTO, result);
-    }
-
-    @Test
-    public void testGetCandidateByIdNotFound() {
-        Long candidateId = 1L;
-        when(candidateRepository.findById(candidateId)).thenReturn(Optional.empty());
-
-        assertThrows(CandidateException.class, () -> {
-            candidateService.getCandidateById(candidateId);
-        });
-    }
-
-    // You can continue to add more tests for other methods in a similar manner
-
-}
-
-
-
 @Test
 public void testGetCandidateById() throws CandidateException {
     Long candidateId = 1L;
@@ -90,6 +7,8 @@ public void testGetCandidateById() throws CandidateException {
     // Set candidateDTO's attributes if necessary.
     
     when(candidateRepository.findById(candidateId)).thenReturn(Optional.of(candidate));
+    
+    // Note: No 'Optional' wrapping here.
     when(modelMapper.map(candidate, CandidateDTO.class)).thenReturn(candidateDTO);
 
     CandidateDTO result = candidateService.getCandidateById(candidateId);
