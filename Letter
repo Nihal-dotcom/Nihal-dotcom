@@ -49,22 +49,33 @@ public class CandidateServiceImplTest {
         assertEquals(1, candidates.size());
     }
 
-
     @Test
     public void whenValidID_thenCandidateShouldBeFound() throws CandidateException {
-        Long id=12l;
-        CandidateDTO found=candidateService.getCandidateById(id);
+        Long id = 12l;
+
+        Candidate mockCandidate = new Candidate();
+        mockCandidate.setId(id);
+        when(candidateRepository.findById(id)).thenReturn(Optional.of(mockCandidate));
+
+        CandidateDTO mockDTO = new CandidateDTO();
+        mockDTO.setCandidateId(id);
+        when(modelMapper.map(mockCandidate, CandidateDTO.class)).thenReturn(mockDTO);
+
+        CandidateDTO found = candidateService.getCandidateById(id);
+
         assertThat(found.getCandidateId()).isEqualTo(id);
-        
-        
     }
 
     @Test
-    public void whenInValidID_thenCandidateShouldBeFound() throws CandidateException {
-        Long id=127l;
-        CandidateDTO found=candidateService.getCandidateById(id);
-        assertThat(found.getCandidateId()).isNotEqualTo(id);
+    public void whenInValidID_thenCandidateShouldNotBeFound() throws CandidateException {
+        Long id = 127l;
         
-        
+        when(candidateRepository.findById(id)).thenReturn(Optional.empty());
+
+        CandidateException exception = assertThrows(CandidateException.class, () -> {
+            candidateService.getCandidateById(id);
+        });
+
+        assertTrue(exception.getMessage().contains("Candidate Not available"));
     }
 }
