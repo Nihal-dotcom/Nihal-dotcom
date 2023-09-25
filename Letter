@@ -1,32 +1,65 @@
-package com.adp.eletter.entitiy;
+package test.test.java.com.adp.eletter.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import java.util.List;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
-@ToString
-@Entity
-@Table(name = "batch2_ttfive_user")
-public class User {
-	
-	@Id
-	private String name;
-	
-	private String password;
-	
-	private String email;
-	
-	private String role;
-	
-	private String managerId;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import com.adp.eletter.EletterApplication;
+import com.adp.eletter.entitiy.User;
+import com.adp.eletter.repository.UserRepository;
+
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = { EletterApplication.class })
+@AutoConfigureTestDatabase(replace = Replace.NONE)
+@DataJpaTest
+public class UserRepositoryIntegrationTest {
+
+    @Autowired
+    private TestEntityManager entityManager;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Test
+    public void whenSaveUser_thenReturnSavedUser() {
+        User user = new User("JohnDoe", "password123", "john.doe@example.com", "ADMIN", "ManagerA");
+        entityManager.persistAndFlush(user);
+
+        User found = userRepository.findById(user.getName()).orElse(null);
+        assertThat(found.getEmail()).isEqualTo(user.getEmail());
+    }
+
+    @Test
+    public void whenInvalidName_thenReturnNull() {
+        User fromDb = userRepository.findById("NonExistentUser").orElse(null);
+        assertThat(fromDb).isNull();
+    }
+
+    @Test
+    public void givenSetOfUsers_whenFindAll_thenReturnAllUsers() {
+        User user1 = new User("JohnDoe", "password123", "john.doe@example.com", "ADMIN", "ManagerA");
+        User user2 = new User("JaneSmith", "password456", "jane.smith@example.com", "USER", "ManagerB");
+
+        List<User> allUsersBefore = userRepository.findAll();
+
+        entityManager.persist(user1);
+        entityManager.persist(user2);
+        entityManager.flush();
+
+        List<User> allUsersAfter = userRepository.findAll();
+
+        assertThat(allUsersAfter)
+        .hasSize(allUsersBefore.size() + 2);
+    }
 }
