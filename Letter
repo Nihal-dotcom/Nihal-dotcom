@@ -1,97 +1,7 @@
-package com.adp.eletter.entitiy;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-
-
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
-@ToString
-@Entity
-@Table(name = "batch2_ttfive_candidate")
-public class Candidate {
-	@Id
-	@Column(name = "candidate_Id")
-	private Long candidateId;
-	
-	@Column(name = "first_Name")
-	private String firstName;
-	
-	@Column(name = "last_Name")
-	private String lastName;
-	
-	@Column(name = "email")
-	private String email;
-	
-	@Column(name = "pay")
-	private Long pay;
-	
-	@Column(name = "job_Id")
-	private String jobId;
-	
-	@Column(name = "gender")
-	private String gender;
-	
-	@Column(name = "mobile")
-	private Long mobile;
-	
-	@Column(name = "joining_Date")
-	private String joiningDate;
-	
-	@Column(name = "assignedHRId")
-	private String assignedHRId;
-	
-	@Enumerated(EnumType.STRING)
-	@Column(name = "offerLetterStatus")
-	private OfferLetterStatus offerLetterStatus;
-	
-	@Column(name = "selected_Template_Id")
-	private String selectedTemplateId;
-	
-	@Column(name = "generated_Letter_Destination")
-	private String generatedLetterDestination;
-	
-	@Column(name = "remarks_By_HR")
-	private String remarksByHR;
-	
-	@Column(name = "remarks_By_Manager")
-	private String remarksByManager;
-
-	public OfferLetterStatus getOfferLetterStatus() {
-		return offerLetterStatus;
-	}
-
-	public void setOfferLetterStatus(OfferLetterStatus offerLetterStatus) {
-		this.offerLetterStatus = offerLetterStatus;
-	}
-
-	public enum OfferLetterStatus {
-			GENERATED,
-			PENDING,
-			APPROVED,
-			REJECTED,
-			SENTEMAIL
-	}
-}
-
-
 package com.adp.eletter.entity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-
-import java.time.LocalDate;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -103,11 +13,27 @@ import com.adp.eletter.entitiy.Candidate.OfferLetterStatus;
 public class CandidateTest {
 
 	private Candidate candidate;
+
 	@BeforeEach
 	void setUp() throws Exception {
-		candidate= new Candidate(12l,"panda","barenya","panda@gmail.com",1000000l,"ADP01","Male",9390999755l,"3gds","wad",OfferLetterStatus.GENERATED,"12gnfc","yes");
+		candidate = new Candidate(
+			12l,
+			"panda",
+			"barenya",
+			"panda@gmail.com",
+			1000000l,
+			"ADP01",
+			"Male",
+			9390999755l,
+			"2023-09-25",
+			"3gds",
+			OfferLetterStatus.GENERATED,
+			"12gnfc",
+			"some/path/to/letter",
+			"Remark by HR",
+			"Remark by Manager"
+		);
 	}
-
 
 	@AfterEach
 	void tearDown() throws Exception {
@@ -119,26 +45,28 @@ public class CandidateTest {
 		assertNotNull(candidate);
 	}
 
-
 	@Test
 	void testDefaultConstructor() {
 		Candidate candidate = new Candidate();
 		assertNotNull(candidate);
 	}
-	
+
 	@Test
 	void testGetters() {
-		assertEquals("panda",candidate.getFirstName());
-		assertEquals(12,candidate.getCandidateId());
+		assertEquals("panda", candidate.getFirstName());
+		assertEquals(12l, candidate.getCandidateId());
 		assertEquals("3gds", candidate.getAssignedHRId());
-		assertEquals("panda@gmail.com",candidate.getEmail());
-		assertEquals("Male",candidate.getGender());
+		assertEquals("panda@gmail.com", candidate.getEmail());
+		assertEquals("Male", candidate.getGender());
 		assertEquals("ADP01", candidate.getJobId());
 		assertEquals("barenya", candidate.getLastName());
 		assertEquals(9390999755l, candidate.getMobile());
 		assertEquals(1000000l, candidate.getPay());
-		assertEquals("wad", candidate.getManagerId());
-		
+		assertEquals(OfferLetterStatus.GENERATED, candidate.getOfferLetterStatus());
+		assertEquals("12gnfc", candidate.getSelectedTemplateId());
+		assertEquals("some/path/to/letter", candidate.getGeneratedLetterDestination());
+		assertEquals("Remark by HR", candidate.getRemarksByHR());
+		assertEquals("Remark by Manager", candidate.getRemarksByManager());
 	}
 
 	@Test
@@ -148,49 +76,29 @@ public class CandidateTest {
 		candidate.setAssignedHRId("sda");
 		candidate.setEmail("panda@adp.com");
 		candidate.setGender("Female");
-		candidate.setGeneratedOfferLetter("GENERATED");
+		candidate.setOfferLetterStatus(OfferLetterStatus.APPROVED);
 		candidate.setJobId("sea");
 		candidate.setLastName("charan");
 		candidate.setMobile(9949591936l);
 		candidate.setPay(300000l);
-		candidate.setManagerId("man02");
+		candidate.setSelectedTemplateId("temp002");
 
-		assertEquals("sai",candidate.getFirstName());
-		assertEquals(3333,candidate.getCandidateId());
+		assertEquals("sai", candidate.getFirstName());
+		assertEquals(3333l, candidate.getCandidateId());
 		assertEquals("sda", candidate.getAssignedHRId());
-		assertEquals("panda@adp.com",candidate.getEmail());
-		assertEquals("Female",candidate.getGender());
-		assertEquals("GENERATED", candidate.getGeneratedOfferLetter());
+		assertEquals("panda@adp.com", candidate.getEmail());
+		assertEquals("Female", candidate.getGender());
+		assertEquals(OfferLetterStatus.APPROVED, candidate.getOfferLetterStatus());
 		assertEquals("sea", candidate.getJobId());
 		assertEquals("charan", candidate.getLastName());
 		assertEquals(9949591936l, candidate.getMobile());
 		assertEquals(300000l, candidate.getPay());
-		assertEquals("man02", candidate.getManagerId());
+		assertEquals("temp002", candidate.getSelectedTemplateId());
 	}
 
-	
-	
-	
-	
 	@Test
 	void testToString() {
-		
-	
-		candidate.setFirstName("sai");
-		candidate.setCandidateId(3333l);
-		candidate.setAssignedHRId("sda");
-		candidate.setEmail("panda@adp.com");
-		candidate.setGender("Female");
-		candidate.setGeneratedOfferLetter("GENERATED");
-		candidate.setJobId("sea");
-		candidate.setLastName("charan");
-		candidate.setMobile(9949591936l);
-		candidate.setPay(300000l);
-		candidate.setManagerId("man02");
-		
-		String toTest="Candidate(candidateId=3333, firstName=sai, lastName=charan, email=panda@adp.com, pay=300000, jobId=sea, gender=Female, mobile=9949591936, assignedHRId=sda, managerId=man02, offerLetterStatus=GENERATED, selectedTemplateId=12gnfc, generatedOfferLetter=GENERATED)";
+		String toTest = "Candidate(candidateId=12, firstName=panda, lastName=barenya, email=panda@gmail.com, pay=1000000, jobId=ADP01, gender=Male, mobile=9390999755, joiningDate=2023-09-25, assignedHRId=3gds, offerLetterStatus=GENERATED, selectedTemplateId=12gnfc, generatedLetterDestination=some/path/to/letter, remarksByHR=Remark by HR, remarksByManager=Remark by Manager)";
 		assertEquals(toTest, candidate.toString());
-		
 	}
-
 }
