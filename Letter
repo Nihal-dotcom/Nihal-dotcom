@@ -1,119 +1,142 @@
-package com.adp.eletter.api;
+package test.test.java.com.adp.eletter.api;
 
-import java.util.List;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import java.util.Arrays;
+import java.util.Optional;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.adp.eletter.api.CandidateController;
 import com.adp.eletter.dto.CandidateDTO;
 import com.adp.eletter.entitiy.Candidate.OfferLetterStatus;
 import com.adp.eletter.service.CandidateService;
 
-@RestController
-@RequestMapping("api/candidate")
-@CrossOrigin
-public class CandidateController {
-	
-	@Autowired(required=false)
-	private CandidateService candidateService;
-	
-	@GetMapping("/all")
-	public ResponseEntity<List<CandidateDTO>> getAllCandidate(){
-		try {
-			List<CandidateDTO> candidateDTOList = candidateService.getAllCandidates();
-			return new ResponseEntity<>(candidateDTOList,HttpStatus.OK);
-		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
-		}
-	}
-	
-	@GetMapping("/{id}")
-	public ResponseEntity<CandidateDTO> getCandidateById(@PathVariable Long id){
-		try {
-			CandidateDTO candidateDTO = candidateService.getCandidateById(id);
-			return new ResponseEntity<>(candidateDTO,HttpStatus.OK);
-		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
-		}
-	}
-	
-	@GetMapping("/assignedHr/{id}")
-	public ResponseEntity<List<CandidateDTO>> getCandidateByHRId(@PathVariable String id){
-		try {
-			List<CandidateDTO>  candidateDTOList = candidateService.getCandidateByHRId(id);
-			return new ResponseEntity<>(candidateDTOList ,HttpStatus.OK);
-		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
-		}
-	}
-	
-	@GetMapping("/bystatus/{status}")
-	public ResponseEntity<List<CandidateDTO>> getCandidateByStatus(@PathVariable OfferLetterStatus status){
-		try {
-			List<CandidateDTO>  candidateDTOList = candidateService.getCandidateByStatus(status);
-			return new ResponseEntity<>(candidateDTOList ,HttpStatus.OK);
-		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
-		}
-	}
-	
-	@GetMapping("/assignedHrAndStatus/{id}/{status}")
-	public ResponseEntity<List<CandidateDTO>> getCandidateByHRIdAndStatus(@PathVariable String id, @PathVariable OfferLetterStatus status){
-		try {
-			List<CandidateDTO>  candidateDTOList = candidateService.getCandidateByHRIdAndByStatus(id,status);
-			return new ResponseEntity<>(candidateDTOList ,HttpStatus.OK);
-		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
-		}
-	}
-	
-	@GetMapping("/under-manager/{managerId}")
-	public ResponseEntity<List<CandidateDTO>> getCandidateUnderManager(@PathVariable String managerId){
-		try {
-			List<CandidateDTO>  candidateDTOList = candidateService.getCandidateUnderManager(managerId);
-			return new ResponseEntity<>(candidateDTOList ,HttpStatus.OK);
-		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
-		}
-	}
-	
-	@GetMapping("/under-managerAndByStatus/{id}/{status}")
-	public ResponseEntity<List<CandidateDTO>> getCandidateUnderManagerIdAndStatus(@PathVariable String id, @PathVariable OfferLetterStatus status){
-		try {
-			List<CandidateDTO>  candidateDTOList = candidateService.getCandidateUnderManagerIdAndByStatus(id,status);
-			//candidateDTOList.stream().forEach(System.out::println);
-			return new ResponseEntity<>(candidateDTOList ,HttpStatus.OK);
-		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
-		}
-	}
-	
-	
-	@PutMapping("/update-status/{id}/{status}")
-	public ResponseEntity<CandidateDTO> updateCandidateStatus(@PathVariable Long id, @PathVariable OfferLetterStatus status){
-		try {
-			CandidateDTO  candidateDTO = candidateService.updateOfferLetterStatus(id,status);
-			return new ResponseEntity<>(candidateDTO ,HttpStatus.OK);
-		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
-		}
-	}
-	
-	@PutMapping("/update-template/{id}/{template}")
-	public ResponseEntity<CandidateDTO> updateCandidateTemplate(@PathVariable Long id, @PathVariable String template){
-		try {
-			CandidateDTO  candidateDTO = candidateService.updateTemplate(id,template);
-			return new ResponseEntity<>(candidateDTO ,HttpStatus.OK);
-		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
-		}
-	}
+@ExtendWith(SpringExtension.class)
+public class CandidateControllerTest {
+
+    private MockMvc mockMvc;
+
+    @Mock
+    private CandidateService candidateService;
+
+    @InjectMocks
+    private CandidateController candidateController;
+
+    public CandidateControllerTest() {
+        this.mockMvc = MockMvcBuilders.standaloneSetup(candidateController).build();
+    }
+
+    @Test
+    public void testGetAllCandidate() throws Exception {
+        CandidateDTO candidateDTO = new CandidateDTO();
+        when(candidateService.getAllCandidates()).thenReturn(Arrays.asList(candidateDTO));
+
+        mockMvc.perform(get("/api/candidate/all"))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testGetCandidateById() throws Exception {
+        CandidateDTO candidateDTO = new CandidateDTO();
+        when(candidateService.getCandidateById(1L)).thenReturn(candidateDTO);
+
+        mockMvc.perform(get("/api/candidate/1"))
+            .andExpect(status().isOk());
+    }
+
+    // ... add tests for other endpoints
+
+    @Test
+    public void testUpdateCandidateStatus() throws Exception {
+        CandidateDTO candidateDTO = new CandidateDTO();
+        when(candidateService.updateOfferLetterStatus(1L, OfferLetterStatus.APPROVED)).thenReturn(candidateDTO);
+
+        mockMvc.perform(put("/api/candidate/update-status/1/APPROVED")
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testExceptionHandling() throws Exception {
+        when(candidateService.getAllCandidates()).thenThrow(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error message"));
+
+        mockMvc.perform(get("/api/candidate/all"))
+            .andExpect(status().isBadRequest())
+            .andExpect(status().reason("Error message"));
+    }
+
+@Test
+    public void testGetCandidateByHRId() throws Exception {
+        CandidateDTO candidateDTO = new CandidateDTO();
+        when(candidateService.getCandidateByHRId("HR01")).thenReturn(Arrays.asList(candidateDTO));
+
+        mockMvc.perform(get("/api/candidate/assignedHr/HR01"))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testGetCandidateByStatus() throws Exception {
+        CandidateDTO candidateDTO = new CandidateDTO();
+        when(candidateService.getCandidateByStatus(OfferLetterStatus.GENERATED)).thenReturn(Arrays.asList(candidateDTO));
+
+        mockMvc.perform(get("/api/candidate/bystatus/GENERATED"))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testGetCandidateByHRIdAndStatus() throws Exception {
+        CandidateDTO candidateDTO = new CandidateDTO();
+        when(candidateService.getCandidateByHRIdAndByStatus("HR01", OfferLetterStatus.GENERATED)).thenReturn(Arrays.asList(candidateDTO));
+
+        mockMvc.perform(get("/api/candidate/assignedHrAndStatus/HR01/GENERATED"))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testGetCandidateUnderManager() throws Exception {
+        CandidateDTO candidateDTO = new CandidateDTO();
+        when(candidateService.getCandidateUnderManager("MGR01")).thenReturn(Arrays.asList(candidateDTO));
+
+        mockMvc.perform(get("/api/candidate/under-manager/MGR01"))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testGetCandidateUnderManagerIdAndStatus() throws Exception {
+        CandidateDTO candidateDTO = new CandidateDTO();
+        when(candidateService.getCandidateUnderManagerIdAndByStatus("MGR01", OfferLetterStatus.GENERATED)).thenReturn(Arrays.asList(candidateDTO));
+
+        mockMvc.perform(get("/api/candidate/under-managerAndByStatus/MGR01/GENERATED"))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testUpdateCandidateTemplate() throws Exception {
+        CandidateDTO candidateDTO = new CandidateDTO();
+        when(candidateService.updateTemplate(1L, "template1")).thenReturn(candidateDTO);
+
+        mockMvc.perform(put("/api/candidate/update-template/1/template1")
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testExceptionWhenFetchingCandidateById() throws Exception {
+        when(candidateService.getCandidateById(99L)).thenThrow(new RuntimeException("Candidate not found"));
+
+        mockMvc.perform(get("/api/candidate/99"))
+            .andExpect(status().isBadRequest())
+            .andExpect(status().reason("Candidate not found"));
+    }
 }
