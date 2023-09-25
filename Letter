@@ -1,105 +1,196 @@
-package com.adp.eletter.service;
+package com.adp.eletter.entitiy;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
 
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@ToString
+@Entity
+@Table(name = "batch2_ttfive_candidate")
+public class Candidate {
+	@Id
+	@Column(name = "candidate_Id")
+	private Long candidateId;
+	
+	@Column(name = "first_Name")
+	private String firstName;
+	
+	@Column(name = "last_Name")
+	private String lastName;
+	
+	@Column(name = "email")
+	private String email;
+	
+	@Column(name = "pay")
+	private Long pay;
+	
+	@Column(name = "job_Id")
+	private String jobId;
+	
+	@Column(name = "gender")
+	private String gender;
+	
+	@Column(name = "mobile")
+	private Long mobile;
+	
+	@Column(name = "joining_Date")
+	private String joiningDate;
+	
+	@Column(name = "assignedHRId")
+	private String assignedHRId;
+	
+	@Enumerated(EnumType.STRING)
+	@Column(name = "offerLetterStatus")
+	private OfferLetterStatus offerLetterStatus;
+	
+	@Column(name = "selected_Template_Id")
+	private String selectedTemplateId;
+	
+	@Column(name = "generated_Letter_Destination")
+	private String generatedLetterDestination;
+	
+	@Column(name = "remarks_By_HR")
+	private String remarksByHR;
+	
+	@Column(name = "remarks_By_Manager")
+	private String remarksByManager;
+
+	public OfferLetterStatus getOfferLetterStatus() {
+		return offerLetterStatus;
+	}
+
+	public void setOfferLetterStatus(OfferLetterStatus offerLetterStatus) {
+		this.offerLetterStatus = offerLetterStatus;
+	}
+
+	public enum OfferLetterStatus {
+			GENERATED,
+			PENDING,
+			APPROVED,
+			REJECTED,
+			SENTEMAIL
+	}
+}
+
+
+package com.adp.eletter.entity;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import java.time.LocalDate;
+
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.ModelMapper;
 
-import com.adp.eletter.dto.CandidateDTO;
 import com.adp.eletter.entitiy.Candidate;
 import com.adp.eletter.entitiy.Candidate.OfferLetterStatus;
-import com.adp.eletter.entitiy.User;
-import com.adp.eletter.exception.CandidateException;
-import com.adp.eletter.repository.CandidateRepository;
-import com.adp.eletter.repository.UserRepository;
 
-@ExtendWith(MockitoExtension.class)
-public class CandidateServiceIntegrationTest {
+public class CandidateTest {
 
-    @Mock
-    private CandidateRepository candidateRepository;
+	private Candidate candidate;
+	@BeforeEach
+	void setUp() throws Exception {
+		candidate= new Candidate(12l,"panda","barenya","panda@gmail.com",1000000l,"ADP01","Male",9390999755l,"3gds","wad",OfferLetterStatus.GENERATED,"12gnfc","yes");
+	}
 
-    @Mock
-    private UserRepository userRepository;
 
-    @InjectMocks
-    private CandidateServiceImpl candidateServiceImpl;
+	@AfterEach
+	void tearDown() throws Exception {
+		candidate = null;
+	}
 
-    private Candidate candidate1, candidate2;
-    private User user1;
+	@Test
+	void testAllArgConstructor() {
+		assertNotNull(candidate);
+	}
 
-    @BeforeEach
-    public void setUp() {
-        // ... [Your previous mock data setup]
 
-        user1 = new User();
-        user1.setId("user001");
-        user1.setName("HR001");
-        // ... [other user fields, adjust accordingly]
+	@Test
+	void testDefaultConstructor() {
+		Candidate candidate = new Candidate();
+		assertNotNull(candidate);
+	}
+	
+	@Test
+	void testGetters() {
+		assertEquals("panda",candidate.getFirstName());
+		assertEquals(12,candidate.getCandidateId());
+		assertEquals("3gds", candidate.getAssignedHRId());
+		assertEquals("panda@gmail.com",candidate.getEmail());
+		assertEquals("Male",candidate.getGender());
+		assertEquals("ADP01", candidate.getJobId());
+		assertEquals("barenya", candidate.getLastName());
+		assertEquals(9390999755l, candidate.getMobile());
+		assertEquals(1000000l, candidate.getPay());
+		assertEquals("wad", candidate.getManagerId());
+		
+	}
 
-        Mockito.when(userRepository.findById(user1.getId())).thenReturn(Optional.of(user1));
-        Mockito.when(userRepository.findById("invalidId")).thenReturn(Optional.empty());
-    }
-    
-    // ... [Your previous tests]
+	@Test
+	void testSetters() {
+		candidate.setFirstName("sai");
+		candidate.setCandidateId(3333l);
+		candidate.setAssignedHRId("sda");
+		candidate.setEmail("panda@adp.com");
+		candidate.setGender("Female");
+		candidate.setGeneratedOfferLetter("GENERATED");
+		candidate.setJobId("sea");
+		candidate.setLastName("charan");
+		candidate.setMobile(9949591936l);
+		candidate.setPay(300000l);
+		candidate.setManagerId("man02");
 
-    @Test
-    public void whenUpdateRemarksByValidHR_thenRemarksShouldUpdate() throws CandidateException {
-        Long candidateId = 12L;  // candidate1's ID
-        String userId = "user001";  // user1's ID
-        String remarks = "Some remarks by HR";
+		assertEquals("sai",candidate.getFirstName());
+		assertEquals(3333,candidate.getCandidateId());
+		assertEquals("sda", candidate.getAssignedHRId());
+		assertEquals("panda@adp.com",candidate.getEmail());
+		assertEquals("Female",candidate.getGender());
+		assertEquals("GENERATED", candidate.getGeneratedOfferLetter());
+		assertEquals("sea", candidate.getJobId());
+		assertEquals("charan", candidate.getLastName());
+		assertEquals(9949591936l, candidate.getMobile());
+		assertEquals(300000l, candidate.getPay());
+		assertEquals("man02", candidate.getManagerId());
+	}
 
-        CandidateDTO updatedDTO = candidateServiceImpl.updateRemarks(candidateId, userId, remarks);
+	
+	
+	
+	
+	@Test
+	void testToString() {
+		
+	
+		candidate.setFirstName("sai");
+		candidate.setCandidateId(3333l);
+		candidate.setAssignedHRId("sda");
+		candidate.setEmail("panda@adp.com");
+		candidate.setGender("Female");
+		candidate.setGeneratedOfferLetter("GENERATED");
+		candidate.setJobId("sea");
+		candidate.setLastName("charan");
+		candidate.setMobile(9949591936l);
+		candidate.setPay(300000l);
+		candidate.setManagerId("man02");
+		
+		String toTest="Candidate(candidateId=3333, firstName=sai, lastName=charan, email=panda@adp.com, pay=300000, jobId=sea, gender=Female, mobile=9949591936, assignedHRId=sda, managerId=man02, offerLetterStatus=GENERATED, selectedTemplateId=12gnfc, generatedOfferLetter=GENERATED)";
+		assertEquals(toTest, candidate.toString());
+		
+	}
 
-        assertThat(updatedDTO.getRemarksByHR()).isEqualTo(remarks);
-    }
-
-    @Test
-    public void whenUpdateRemarksByInvalidUser_thenThrowException() {
-        Long candidateId = 12L;
-        String invalidUserId = "invalidId";
-        String remarks = "Some remarks";
-
-        Exception exception = assertThrows(CandidateException.class, () -> {
-            candidateServiceImpl.updateRemarks(candidateId, invalidUserId, remarks);
-        });
-
-        String expectedMessage = "User Not available";
-        String actualMessage = exception.getMessage();
-        assertThat(actualMessage).isEqualTo(expectedMessage);
-    }
-
-    @Test
-    public void whenGetCandidateUnderValidManager_thenReturnList() throws CandidateException {
-        String managerId = "user001";
-
-        List<CandidateDTO> candidatesUnderManager = candidateServiceImpl.getCandidateUnderManager(managerId);
-
-        // Adjust this assertion based on your expected result.
-        assertThat(candidatesUnderManager).isNotEmpty();
-    }
-
-    //... Add more tests for the rest of the methods in a similar manner ...
-
-    // Utility methods to verify interactions
-    private void verifyFindByIdIsCalledOnce() {
-        verify(candidateRepository, times(1)).findById(anyLong());
-        reset(candidateRepository);
-    }
-
-    private void verifyFindAllCandidatesIsCalledOnce() {
-        verify(candidateRepository, times(1)).findAll();
-        reset(candidateRepository);
-    }
 }
