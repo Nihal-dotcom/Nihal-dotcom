@@ -2,7 +2,6 @@ package test.test.java.com.adp.eletter.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -15,83 +14,53 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
 import com.adp.eletter.EletterApplication;
-import com.adp.eletter.dto.CandidateDTO;
-import com.adp.eletter.entitiy.Candidate;
-import com.adp.eletter.entitiy.Candidate.OfferLetterStatus;
-import com.adp.eletter.repository.CandidateRepository;
+import com.adp.eletter.entity.HR;
+import com.adp.eletter.repository.HRRepository;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = { EletterApplication.class })
-
-@AutoConfigureTestDatabase(replace=Replace.NONE)
-
+@AutoConfigureTestDatabase(replace = Replace.NONE)
 @DataJpaTest
-public class CandidateRepositoryIntegrationTest {
-	
-	
-	@Autowired
-	private TestEntityManager entityManager;
+public class HRRepositoryIntegrationTest {
 
-	@Autowired
-	private CandidateRepository candidateRepository;
-	
-	
+    @Autowired
+    private TestEntityManager entityManager;
 
+    @Autowired
+    private HRRepository hrRepository;
 
     @Test
-    public void whenFindById_thenReturnCandidate() {
-    	
-    	Candidate candidate =new Candidate(1234563l,"panda","barenya","panda@gmail.com",1000000l,"ADP01","Male",9390999755l,"3gds","wad",OfferLetterStatus.GENERATED,"12gnfc","yes");
-    	entityManager.persistAndFlush(candidate);
-    	
-    Candidate found= candidateRepository.findById(candidate.getCandidateId()).orElse(null);
-    assertThat(found.getFirstName()).isEqualTo(candidate.getFirstName());
-    	
-    	
+    public void whenFindById_thenReturnHR() {
+        HR hr = new HR(1L, "John", "Doe", "john.doe@company.com");
+        entityManager.persistAndFlush(hr);
+
+        HR found = hrRepository.findById(hr.getHrId()).orElse(null);
+        assertThat(found.getFirstName()).isEqualTo(hr.getFirstName());
     }
-    
+
     @Test
-    public void whenInvalidId_thenReturnNull1() {
-        Candidate fromDb = candidateRepository.findById(132414441322l).orElse(null);
+    public void whenInvalidId_thenReturnNull() {
+        HR fromDb = hrRepository.findById(132414441322L).orElse(null);
         assertThat(fromDb).isNull();
     }
 
-//    @Test
-//    public void whenFindByName_thenReturnCandidate() {
-//       Candidate candidate =new Candidate(1234563l,"panda","barenya","panda@gmail.com",1000000l,"ADP01","Male",9390999755l,"3gds","wad",OfferLetterStatus.GENERATED,"12gnfc","yes");
-//        entityManager.persistAndFlush(candidate);
-//
-//        Candidate fromDb =candidateRepository.findById(candidate.getCandidateId()).orElse(null);
-//        assertThat(fromDb.getFirstName()).isEqualTo(candidate.getFirstName());
-//    }
-//
-//    @Test
-//    public void whenInvalidId_thenReturnNull() {
-//        Candidate fromDb = candidateRepository.findById(-11l).orElse(null);
-//        assertThat(fromDb).isNull();
-//    }
-
     @Test
-    public void givenSetOfCandidates_whenFindAll_thenReturnAllCandidates() {
-        Candidate panda =new Candidate(1234563l,"panda","barenya","panda@gmail.com",1000000l,"ADP01","Male",9390999755l,"3gds","wad",OfferLetterStatus.GENERATED,"12gnfc","yes");
-        Candidate nandu=new Candidate(2243525l,"nandu","surendhar","davu@gmail.com",1000000l,"ADP01","Male",9390999755l,"3gds","wad",OfferLetterStatus.APPROVED,"12gnfc","yes");
-        
+    public void givenSetOfHRs_whenFindAll_thenReturnAllHRs() {
+        HR john = new HR(1L, "John", "Doe", "john.doe@company.com");
+        HR jane = new HR(2L, "Jane", "Smith", "jane.smith@company.com");
 
-        List<Candidate> allCandidatesBefore = candidateRepository.findAll();
-        
-        entityManager.persist(panda);
-        entityManager.persist(nandu);
+        List<HR> allHRsBefore = hrRepository.findAll();
+
+        entityManager.persist(john);
+        entityManager.persist(jane);
         
         entityManager.flush();
 
-        List<Candidate> allCandidatesAfter = candidateRepository.findAll();
+        List<HR> allHRsAfter = hrRepository.findAll();
 
-        assertThat(allCandidatesAfter)
-        .hasSize(allCandidatesBefore.size()+2);
-
+        assertThat(allHRsAfter)
+        .hasSize(allHRsBefore.size() + 2);
     }
-    
-    
-    
 }
