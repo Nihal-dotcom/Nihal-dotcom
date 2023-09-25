@@ -1,86 +1,38 @@
-package com.adp.eletter.entitiy;
+@BeforeEach
+public void setUp() {
+    panda = new Candidate(
+        12l,                        // candidateId
+        "panda",                    // firstName
+        "barenya",                  // lastName
+        "panda@gmail.com",          // email
+        1000000l,                   // pay
+        "ADP01",                    // jobId
+        "Male",                     // gender
+        9390999755l,                // mobile
+        "2023-09-25",               // joiningDate (added as an example, adjust accordingly)
+        "3gds",                     // assignedHRId
+        OfferLetterStatus.GENERATED, // offerLetterStatus
+        "12gnfc",                   // selectedTemplateId
+        "some/path/to/letter",      // generatedLetterDestination (added as an example, adjust accordingly)
+        "Remark by HR",             // remarksByHR (added as an example, adjust accordingly)
+        "Remark by Manager"         // remarksByManager (added as an example, adjust accordingly)
+    );
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-
-
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
-@ToString
-@Entity
-@Table(name = "batch2_ttfive_candidate")
-public class Candidate {
-	@Id
-	@Column(name = "candidate_Id")
-	private Long candidateId;
-	
-	@Column(name = "first_Name")
-	private String firstName;
-	
-	@Column(name = "last_Name")
-	private String lastName;
-	
-	@Column(name = "email")
-	private String email;
-	
-	@Column(name = "pay")
-	private Long pay;
-	
-	@Column(name = "job_Id")
-	private String jobId;
-	
-	@Column(name = "gender")
-	private String gender;
-	
-	@Column(name = "mobile")
-	private Long mobile;
-	
-	@Column(name = "joining_Date")
-	private String joiningDate;
-	
-	@Column(name = "assignedHRId")
-	private String assignedHRId;
-	
-	@Enumerated(EnumType.STRING)
-	@Column(name = "offerLetterStatus")
-	private OfferLetterStatus offerLetterStatus;
-	
-	@Column(name = "selected_Template_Id")
-	private String selectedTemplateId;
-	
-	@Column(name = "generated_Letter_Destination")
-	private String generatedLetterDestination;
-	
-	@Column(name = "remarks_By_HR")
-	private String remarksByHR;
-	
-	@Column(name = "remarks_By_Manager")
-	private String remarksByManager;
-
-	public OfferLetterStatus getOfferLetterStatus() {
-		return offerLetterStatus;
-	}
-
-	public void setOfferLetterStatus(OfferLetterStatus offerLetterStatus) {
-		this.offerLetterStatus = offerLetterStatus;
-	}
-
-	public enum OfferLetterStatus {
-			GENERATED,
-			PENDING,
-			APPROVED,
-			REJECTED,
-			SENTEMAIL
-	}
+    nandu = new Candidate(
+        22l,                        // candidateId
+        "nandu",                    // firstName
+        "surendhar",                // lastName
+        "davu@gmail.com",           // email
+        1000000l,                   // pay
+        "ADP01",                    // jobId
+        "Male",                     // gender
+        9390999755l,                // mobile
+        "2023-09-26",               // joiningDate (added as an example, adjust accordingly)
+        "3ds",                      // assignedHRId
+        OfferLetterStatus.APPROVED, // offerLetterStatus
+        "12gnfc",                   // selectedTemplateId
+        "some/path/to/letter",      // generatedLetterDestination (added as an example, adjust accordingly)
+        "Remark by HR",             // remarksByHR (added as an example, adjust accordingly)
+        "Remark by Manager"         // remarksByManager (added as an example, adjust accordingly)
+    );
 }
