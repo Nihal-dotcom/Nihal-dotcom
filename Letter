@@ -1,37 +1,124 @@
-package com.adp.eletter.config;
+package com.adp.eletter.entitiy;
 
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import javax.sql.DataSource;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
-@TestConfiguration
-@EnableJpaRepositories(basePackages = "com.adp.eletter.repository")
-@EnableTransactionManagement
-public class TestDBConfig {
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@ToString
+@Entity
+@Table(name = "batch2_ttfive_user")
+public class User {
+	
+	@Id
+	private String name;
+	
+	private String password;
+	
+	private String email;
+	
+	private String role;
+	
+	private String managerId;
 
-    @Bean
-    @Primary
-    public DataSource dataSource() {
-        return new EmbeddedDatabaseBuilder()
-            .setType(EmbeddedDatabaseType.H2)
-            .build();
-    }
+	public void setId(String string) {
+		// TODO Auto-generated method stub
+		
+	}
 
-    @Bean
-    @Primary
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-        LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
-        em.setDataSource(dataSource());
-        em.setPackagesToScan("com.adp.eletter.entity");
-        return em;
-    }
+	public String getId() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
 
 
+package com.adp.eletter.entity;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import com.adp.eletter.entitiy.HR;
+import com.adp.eletter.entitiy.User;
+
+public class UserTests {
+
+
+
+	private User user;
+	@BeforeEach
+	void setUp() throws Exception {
+		user= new User("panda","123","panda@adp.com","hr","wsd");
+		
+	}
+	
+
+	@AfterEach
+	void tearDown() throws Exception {
+		user = null;
+	}
+
+	@Test
+	void testAllArgConstructor() {
+		assertNotNull(user);
+	}
+
+
+	@Test
+	void testDefaultConstructor() {
+		HR user = new HR();
+		assertNotNull(user);
+	}
+	@Test
+	void testGetters() {
+		assertEquals("wsd", user.getManagerId());
+		assertEquals("panda", user.getName());
+		assertEquals("panda@adp.com", user.getEmail());
+		assertEquals("123", user.getPassword());
+		assertEquals("hr", user.getRole());
+	}
+	@Test
+	void testsetters() {
+		
+		user.setManagerId("wsda");
+		user.setEmail("panda@gmail.com");
+		user.setName("ppaa");
+		user.setPassword("999");
+		user.setRole("manager");
+		
+		assertEquals("wsda", user.getManagerId());
+		assertEquals("ppaa", user.getName());
+		assertEquals("panda@gmail.com", user.getEmail());
+		assertEquals("999", user.getPassword());
+		assertEquals("manager", user.getRole());
+	}
+	
+	@Test
+	void testToString() {
+		user.setManagerId("wsda");
+		user.setEmail("panda@gmail.com");
+		user.setName("ppaa");
+		user.setPassword("999");
+		user.setRole("manager");
+		
+		String toTest="User(name=ppaa, password=999, email=panda@gmail.com, role=manager, managerId=wsda)";
+		
+		assertEquals(toTest, user.toString());
+		
+	}
+	
+
+}
