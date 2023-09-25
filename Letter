@@ -1,173 +1,183 @@
 package com.adp.eletter.api;
 
-import java.util.List;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
-
-import com.adp.eletter.dto.CandidateDTO;
-import com.adp.eletter.entitiy.Candidate.OfferLetterStatus;
 import com.adp.eletter.service.CandidateService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-@RestController
-@RequestMapping("api/candidate")
-@CrossOrigin
-public class CandidateController {
-	
-	@Autowired(required=false)
-	private CandidateService candidateService;
-	
-	@GetMapping("/all")
-	public ResponseEntity<List<CandidateDTO>> getAllCandidate(){
-		try {
-			List<CandidateDTO> candidateDTOList = candidateService.getAllCandidates();
-			return new ResponseEntity<>(candidateDTOList,HttpStatus.OK);
-		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
-		}
-	}
-	
-	@GetMapping("/{id}")
-	public ResponseEntity<CandidateDTO> getCandidateById(@PathVariable Long id){
-		try {
-			CandidateDTO candidateDTO = candidateService.getCandidateById(id);
-			return new ResponseEntity<>(candidateDTO,HttpStatus.OK);
-		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
-		}
-	}
-	
-	@GetMapping("/assignedHr/{id}")
-	public ResponseEntity<List<CandidateDTO>> getCandidateByHRId(@PathVariable String id){
-		try {
-			List<CandidateDTO>  candidateDTOList = candidateService.getCandidateByHRId(id);
-			return new ResponseEntity<>(candidateDTOList ,HttpStatus.OK);
-		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
-		}
-	}
-	
-	@GetMapping("/bystatus/{status}")
-	public ResponseEntity<List<CandidateDTO>> getCandidateByStatus(@PathVariable OfferLetterStatus status){
-		try {
-			List<CandidateDTO>  candidateDTOList = candidateService.getCandidateByStatus(status);
-			return new ResponseEntity<>(candidateDTOList ,HttpStatus.OK);
-		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
-		}
-	}
-	
-	@GetMapping("/assignedHrAndStatus/{id}/{status}")
-	public ResponseEntity<List<CandidateDTO>> getCandidateByHRIdAndStatus(@PathVariable String id, @PathVariable OfferLetterStatus status){
-		try {
-			List<CandidateDTO>  candidateDTOList = candidateService.getCandidateByHRIdAndByStatus(id,status);
-			return new ResponseEntity<>(candidateDTOList ,HttpStatus.OK);
-		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
-		}
-	}
-	
-	@GetMapping("/under-manager/{managerId}")
-	public ResponseEntity<List<CandidateDTO>> getCandidateUnderManager(@PathVariable String managerId){
-		try {
-			List<CandidateDTO>  candidateDTOList = candidateService.getCandidateUnderManager(managerId);
-			return new ResponseEntity<>(candidateDTOList ,HttpStatus.OK);
-		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
-		}
-	}
-	
-	@GetMapping("/under-managerAndByStatus/{id}/{status}")
-	public ResponseEntity<List<CandidateDTO>> getCandidateUnderManagerIdAndStatus(@PathVariable String id, @PathVariable OfferLetterStatus status){
-		try {
-			List<CandidateDTO>  candidateDTOList = candidateService.getCandidateUnderManagerIdAndByStatus(id,status);
-			//candidateDTOList.stream().forEach(System.out::println);
-			return new ResponseEntity<>(candidateDTOList ,HttpStatus.OK);
-		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
-		}
-	}
-	
-	
-	@PutMapping("/update-status/{id}/{status}")
-	public ResponseEntity<CandidateDTO> updateCandidateStatus(@PathVariable Long id, @PathVariable OfferLetterStatus status){
-		try {
-			CandidateDTO  candidateDTO = candidateService.updateOfferLetterStatus(id,status);
-			return new ResponseEntity<>(candidateDTO ,HttpStatus.OK);
-		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
-		}
-	}
-	
-	@PutMapping("/update-template/{id}/{template}")
-	public ResponseEntity<CandidateDTO> updateCandidateTemplate(@PathVariable Long id, @PathVariable String template){
-		try {
-			CandidateDTO  candidateDTO = candidateService.updateTemplate(id,template);
-			return new ResponseEntity<>(candidateDTO ,HttpStatus.OK);
-		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
-		}
-	}
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+class CandidateControllerTest {
+
+    @Mock
+    private CandidateService candidateService;
+
+    @InjectMocks
+    private CandidateController candidateController;
+
+    private MockMvc mockMvc;
+    private ObjectMapper objectMapper;
+
+    @BeforeEach
+    void setUp() throws Exception {
+        mockMvc = MockMvcBuilders.standaloneSetup(candidateController).build();
+        objectMapper = new ObjectMapper();
+    }
+
+    @Test
+    void testGetAllCandidates() throws Exception {
+        // Assuming candidateService.getAllCandidates() returns a List<CandidateDTO> 
+        // you would set this up here. For simplicity, I'm skipping this step.
+
+        mockMvc.perform(get("/api/candidate/all"))
+               .andExpect(status().isOk());
+
+        verify(candidateService, times(1)).getAllCandidates();
+    }
+
+    // Similarly, you can write tests for other endpoints.
+    // For brevity, I'm not writing out every test, but you'd follow a similar pattern.
+
+    @Test
+    void testGetCandidateById() throws Exception {
+        Long id = 1L;
+
+        mockMvc.perform(get("/api/candidate/{id}", id))
+               .andExpect(status().isOk());
+
+        verify(candidateService, times(1)).getCandidateById(id);
+    }
+
+    // Add more tests for other methods in the CandidateController.
 }
 
+@Test
+    void testGetCandidateByHRId() throws Exception {
+        String hrId = "HR001";
+        
+        mockMvc.perform(get("/api/candidate/assignedHr/{id}", hrId))
+               .andExpect(status().isOk());
+
+        verify(candidateService, times(1)).getCandidateByHRId(hrId);
+    }
+
+    @Test
+    void testGetCandidateByStatus() throws Exception {
+        OfferLetterStatus status = OfferLetterStatus.GENERATED;
+        
+        mockMvc.perform(get("/api/candidate/bystatus/{status}", status))
+               .andExpect(status().isOk());
+
+        verify(candidateService, times(1)).getCandidateByStatus(status);
+    }
+
+    @Test
+    void testUpdateCandidateStatus() throws Exception {
+        Long id = 1L;
+        OfferLetterStatus status = OfferLetterStatus.APPROVED;
+        
+        mockMvc.perform(put("/api/candidate/update-status/{id}/{status}", id, status))
+               .andExpect(status().isOk());
+
+        verify(candidateService, times(1)).updateOfferLetterStatus(id, status);
+    }
+
+    //... Add tests for other methods as needed ...
+}
 
 
 
 package com.adp.eletter.api;
 
-import java.util.List;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
-
-import com.adp.eletter.dto.CustomResponse;
-import com.adp.eletter.dto.EmailDTO;
-import com.adp.eletter.repository.EmailRepository;
 import com.adp.eletter.service.EmailService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-@RestController
-@RequestMapping("api/email")
-@CrossOrigin
-public class EmailController {
-	
-	@Autowired(required=false)
-	private EmailService emailService;
-	
-	@GetMapping("/all")
-	public ResponseEntity<List<EmailDTO>> getAllEmails(){
-		try {
-			
-			List<EmailDTO> emailDTOList = emailService.getAllEmails();
-			
-			return new ResponseEntity<>(emailDTOList ,HttpStatus.OK);
-		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
-		}
-	}
-	
-	@PostMapping("/create")
-	public ResponseEntity<CustomResponse<EmailDTO>> createEmail(@RequestBody EmailDTO emailDTO){
-		try {
-			CustomResponse<EmailDTO> response  = emailService.createEmail(emailDTO);
-			return new ResponseEntity<>(response ,HttpStatus.OK);
-		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
-		}
-	}
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+class EmailControllerTest {
+
+    @Mock
+    private EmailService emailService;
+
+    @InjectMocks
+    private EmailController emailController;
+
+    private MockMvc mockMvc;
+    private ObjectMapper objectMapper;
+
+    @BeforeEach
+    void setUp() throws Exception {
+        mockMvc = MockMvcBuilders.standaloneSetup(emailController).build();
+        objectMapper = new ObjectMapper();
+    }
+
+    @Test
+    void testGetAllEmails() throws Exception {
+        mockMvc.perform(get("/api/email/all"))
+               .andExpect(status().isOk());
+
+        verify(emailService, times(1)).getAllEmails();
+    }
+
+    @Test
+    void testCreateEmail() throws Exception {
+        EmailDTO emailDTO = new EmailDTO();
+        // Set necessary fields on emailDTO.
+
+        mockMvc.perform(post("/api/email/create")
+                        .content(objectMapper.writeValueAsString(emailDTO))
+                        .contentType(MediaType.APPLICATION_JSON))
+               .andExpect(status().isOk());
+
+        verify(emailService, times(1)).createEmail(any(EmailDTO.class));
+    }
+
+    // Add more tests for other methods in the EmailController.
 }
+
+@Test
+    void testGetAllEmailsFailure() throws Exception {
+        when(emailService.getAllEmails()).thenThrow(new Exception("Service Error"));
+
+        mockMvc.perform(get("/api/email/all"))
+               .andExpect(status().isBadRequest());
+
+        verify(emailService, times(1)).getAllEmails();
+    }
+
+    @Test
+    void testCreateEmailFailure() throws Exception {
+        EmailDTO emailDTO = new EmailDTO();
+        // Set necessary fields on emailDTO.
+        
+        when(emailService.createEmail(any(EmailDTO.class))).thenThrow(new Exception("Service Error"));
+
+        mockMvc.perform(post("/api/email/create")
+                        .content(objectMapper.writeValueAsString(emailDTO))
+                        .contentType(MediaType.APPLICATION_JSON))
+               .andExpect(status().isBadRequest());
+
+        verify(emailService, times(1)).createEmail(any(EmailDTO.class));
+    }
+
+    //... Add tests for other methods as needed ...
+}
+
