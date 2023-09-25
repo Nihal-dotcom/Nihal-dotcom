@@ -1,21 +1,86 @@
-package com.adp.eletter.service;
+package com.adp.eletter.entitiy;
 
-import java.util.List;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
-import com.adp.eletter.dto.CandidateDTO;
-import com.adp.eletter.entitiy.Candidate.OfferLetterStatus;
-import com.adp.eletter.exception.CandidateException;
 
-public interface CandidateService {
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@ToString
+@Entity
+@Table(name = "batch2_ttfive_candidate")
+public class Candidate {
+	@Id
+	@Column(name = "candidate_Id")
+	private Long candidateId;
 	
-	public List<CandidateDTO> getAllCandidates() throws CandidateException;
-	public CandidateDTO getCandidateById(Long candidateId) throws CandidateException;
-	public List<CandidateDTO> getCandidateByHRId(String assignedHRId) throws CandidateException;
-	public List<CandidateDTO> getCandidateByStatus(OfferLetterStatus offerLetterStatus) throws CandidateException;
-	public List<CandidateDTO> getCandidateByHRIdAndByStatus(String assignedHRId, OfferLetterStatus offerLetterStatus) throws CandidateException;
-	public List<CandidateDTO> getCandidateUnderManager(String managerId) throws CandidateException;
-	public List<CandidateDTO> getCandidateUnderManagerIdAndByStatus(String managerId, OfferLetterStatus offerLetterStatus) throws CandidateException;
-	public CandidateDTO updateOfferLetterStatus(Long candidateId, OfferLetterStatus status) throws CandidateException;
-	public CandidateDTO updateTemplate(Long candidateId, String status) throws CandidateException;
-	public CandidateDTO updateRemarks(Long candidateId, String user,String remarks) throws CandidateException;
+	@Column(name = "first_Name")
+	private String firstName;
+	
+	@Column(name = "last_Name")
+	private String lastName;
+	
+	@Column(name = "email")
+	private String email;
+	
+	@Column(name = "pay")
+	private Long pay;
+	
+	@Column(name = "job_Id")
+	private String jobId;
+	
+	@Column(name = "gender")
+	private String gender;
+	
+	@Column(name = "mobile")
+	private Long mobile;
+	
+	@Column(name = "joining_Date")
+	private String joiningDate;
+	
+	@Column(name = "assignedHRId")
+	private String assignedHRId;
+	
+	@Enumerated(EnumType.STRING)
+	@Column(name = "offerLetterStatus")
+	private OfferLetterStatus offerLetterStatus;
+	
+	@Column(name = "selected_Template_Id")
+	private String selectedTemplateId;
+	
+	@Column(name = "generated_Letter_Destination")
+	private String generatedLetterDestination;
+	
+	@Column(name = "remarks_By_HR")
+	private String remarksByHR;
+	
+	@Column(name = "remarks_By_Manager")
+	private String remarksByManager;
+
+	public OfferLetterStatus getOfferLetterStatus() {
+		return offerLetterStatus;
+	}
+
+	public void setOfferLetterStatus(OfferLetterStatus offerLetterStatus) {
+		this.offerLetterStatus = offerLetterStatus;
+	}
+
+	public enum OfferLetterStatus {
+			GENERATED,
+			PENDING,
+			APPROVED,
+			REJECTED,
+			SENTEMAIL
+	}
 }
