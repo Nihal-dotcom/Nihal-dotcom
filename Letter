@@ -1,57 +1,146 @@
-package com.adp.eletter.api;
+package com.adp.eletter.dto;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import com.adp.eletter.entitiy.Candidate.OfferLetterStatus;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
-import com.adp.eletter.service.UserService;
-import com.itextpdf.text.DocumentException;
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@ToString
+@Builder
+public class CandidateDTO {
+	private Long candidateId;
+	private String firstName;
+	private String lastName;
+	private String email;
+	private Long pay;
+	private String jobId;
+	private String gender;
+	private String joiningDate;
+	private Long mobile;
+	private String assignedHRId;
+	private String remarksByHR;
+	private String remarksByManager;
+	@Enumerated(EnumType.STRING)
+	private OfferLetterStatus offerLetterStatus;
+	private String selectedTemplateId;
+	private String generatedLetterDestination;
+}
 
-import jakarta.servlet.http.HttpServletResponse;
 
-@RestController
-@CrossOrigin
-public class PdfController {
+package com.adp.eletter.dto;
 
-	@Autowired
-	private UserService userService;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-	@GetMapping("/populatedocx/{candidateId}")
-	@ResponseBody
-	public void populateDocx (@PathVariable Long candidateId,HttpServletResponse response) throws IOException, DocumentException {
+import java.time.LocalDate;
 
-		try {
-			String path = userService.populate(candidateId);
-			
-			if(path != null) {
-				response.setContentType("application/pdf");
-				response.setHeader("content-Disposition","attachment; filename = output.docx");
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-				try(FileInputStream in = new FileInputStream(path); 
-						OutputStream out = response.getOutputStream()){
-					byte[] buffer = new byte[1024];
+import com.adp.eletter.dto.CandidateDTO;
 
-					int bytesRead; 
-					while((bytesRead = in.read(buffer)) !=-1){
-						out.write(buffer,0,bytesRead);
-					}
-				} catch(Exception e) {
-					e.printStackTrace();
-				}
-			}else {
-				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			}
-		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
-		}
+public class CandidateDTOTest {
+
+	private CandidateDTO candidateDto;
+	@BeforeEach
+	void setUp() throws Exception {
+		candidateDto= new CandidateDTO(12l,"panda","barenya","panda@gmail.com",1000000l,"ADP01","Male",9390999755l,"3gds","wad",com.adp.eletter.entitiy.Candidate.OfferLetterStatus.GENERATED,"12gnfc","yes");
 	}
+
+
+	@AfterEach
+	void tearDown() throws Exception {
+		candidateDto = null;
+	}
+
+	@Test
+	void testAllArgConstructor() {
+		assertNotNull(candidateDto);
+	}
+
+
+	@Test
+	void testDefaultConstructor() {
+		CandidateDTO candidateDto = new CandidateDTO();
+		assertNotNull(candidateDto);
+	}
+	
+	@Test
+	void testGetters() {
+		assertEquals("panda",candidateDto.getFirstName());
+		assertEquals(12,candidateDto.getCandidateId());
+		assertEquals("3gds", candidateDto.getAssignedHRId());
+		assertEquals("panda@gmail.com",candidateDto.getEmail());
+		assertEquals("Male",candidateDto.getGender());
+		assertEquals("ADP01", candidateDto.getJobId());
+		assertEquals("barenya", candidateDto.getLastName());
+		assertEquals(9390999755l, candidateDto.getMobile());
+		assertEquals(1000000l, candidateDto.getPay());
+		assertEquals("wad", candidateDto.getManagerId());
+		
+	}
+
+	@Test
+	void testSetters() {
+		candidateDto.setFirstName("sai");
+		candidateDto.setCandidateId(3333l);
+		candidateDto.setAssignedHRId("sda");
+		candidateDto.setEmail("panda@adp.com");
+		candidateDto.setGender("Female");
+		candidateDto.setGeneratedOfferLetter("GENERATED");
+		candidateDto.setJobId("sea");
+		candidateDto.setLastName("charan");
+		candidateDto.setMobile(9949591936l);
+		candidateDto.setPay(300000l);
+		candidateDto.setManagerId("man02");
+
+		assertEquals("sai",candidateDto.getFirstName());
+		assertEquals(3333,candidateDto.getCandidateId());
+		assertEquals("sda", candidateDto.getAssignedHRId());
+		assertEquals("panda@adp.com",candidateDto.getEmail());
+		assertEquals("Female",candidateDto.getGender());
+		assertEquals("GENERATED", candidateDto.getGeneratedOfferLetter());
+		assertEquals("sea", candidateDto.getJobId());
+		assertEquals("charan", candidateDto.getLastName());
+		assertEquals(9949591936l, candidateDto.getMobile());
+		assertEquals(300000l, candidateDto.getPay());
+		assertEquals("man02", candidateDto.getManagerId());
+	}
+
+	
+	
+	
+	
+	@Test
+	void testToString() {
+		
+	
+		candidateDto.setFirstName("sai");
+		candidateDto.setCandidateId(3333l);
+		candidateDto.setAssignedHRId("sda");
+		candidateDto.setEmail("panda@adp.com");
+		candidateDto.setGender("Female");
+		candidateDto.setGeneratedOfferLetter("GENERATED");
+		candidateDto.setJobId("sea");
+		candidateDto.setLastName("charan");
+		candidateDto.setMobile(9949591936l);
+		candidateDto.setPay(300000l);
+		candidateDto.setManagerId("man02");
+		
+		String toTest="CandidateDTO(candidateId=3333, firstName=sai, lastName=charan, email=panda@adp.com, pay=300000, jobId=sea, gender=Female, mobile=9949591936, assignedHRId=sda, managerId=man02, offerLetterStatus=GENERATED, selectedTemplateId=12gnfc, generatedOfferLetter=GENERATED)";
+		assertEquals(toTest, candidateDto.toString());
+		
+	}
+
 }
