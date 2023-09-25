@@ -1,84 +1,52 @@
-package test.test.java.com.adp.eletter.service;
+@Test
+    public void testGetAllUsersReturnsEmptyList() throws UserException {
+        when(userRepository.findAll()).thenReturn(Arrays.asList());
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+        Exception exception = org.junit.jupiter.api.Assertions.assertThrows(UserException.class, () -> {
+            userService.getAllUsers();
+        });
 
-import java.util.Arrays;
-import java.util.Optional;
-
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.ModelMapper;
-
-import com.adp.eletter.dto.CustomResponse;
-import com.adp.eletter.dto.UserDTO;
-import com.adp.eletter.entitiy.User;
-import com.adp.eletter.exception.UserException;
-import com.adp.eletter.repository.UserRepository;
-import com.adp.eletter.service.UserServiceImpl;
-
-@ExtendWith(MockitoExtension.class)
-public class UserServiceImplTest {
-
-    @Mock
-    private UserRepository userRepository;
-
-    @Mock
-    private ModelMapper modelMapper;
-
-    @InjectMocks
-    private UserServiceImpl userService;
-
-    @Test
-    public void testGetAllUsers() throws UserException {
-        User user = new User();
-        UserDTO userDTO = new UserDTO();
-        when(userRepository.findAll()).thenReturn(Arrays.asList(user));
-        when(modelMapper.map(user, UserDTO.class)).thenReturn(userDTO);
-
-        assertThat(userService.getAllUsers()).contains(userDTO);
+        assertThat(exception.getMessage()).isEqualTo("No users found !");
     }
 
     @Test
-    public void testAuthenticateByUserNameSuccess() throws UserException {
-        User user = new User();
-        user.setName("john");
-        user.setPassword("pass123");
-        UserDTO userDTO = new UserDTO();
-        when(userRepository.findByName("john")).thenReturn(Optional.of(user));
-        when(modelMapper.map(user, UserDTO.class)).thenReturn(userDTO);
+    public void testGetAllUsersThrowsException() throws UserException {
+        when(userRepository.findAll()).thenThrow(new RuntimeException("DB Error"));
+
+        Exception exception = org.junit.jupiter.api.Assertions.assertThrows(UserException.class, () -> {
+            userService.getAllUsers();
+        });
+
+        assertThat(exception.getMessage()).isEqualTo("DB Error");
+    }
+
+    @Test
+    public void testAuthenticateByUserNameThrowsException() throws UserException {
+        when(userRepository.findByName(anyString())).thenThrow(new RuntimeException("DB Error"));
 
         CustomResponse<UserDTO> response = userService.authenticateByUserName("john", "pass123");
-
-        assertThat(response.getStatus()).isEqualTo("success");
-        assertThat(response.getMessage()).isEqualTo("Successfully logged in");
-    }
-
-    @Test
-    public void testAuthenticateByUserNameInvalidPassword() throws UserException {
-        User user = new User();
-        user.setName("john");
-        user.setPassword("pass123");
-        when(userRepository.findByName("john")).thenReturn(Optional.of(user));
-
-        CustomResponse<UserDTO> response = userService.authenticateByUserName("john", "wrongpass");
 
         assertThat(response.getStatus()).isEqualTo("failure");
-        assertThat(response.getMessage()).isEqualTo("Invalid Password");
+        assertThat(response.getMessage()).isEqualTo("Something went wrong");
     }
 
     @Test
-    public void testAuthenticateByUserNameNotFound() throws UserException {
-        when(userRepository.findByName("john")).thenReturn(Optional.empty());
-
-        CustomResponse<UserDTO> response = userService.authenticateByUserName("john", "pass123");
+    public void testAuthenticateByUserNameWithNullName() throws UserException {
+        CustomResponse<UserDTO> response = userService.authenticateByUserName(null, "pass123");
 
         assertThat(response.getStatus()).isEqualTo("failure");
         assertThat(response.getMessage()).isEqualTo("No body with the username");
     }
 
-    // ... Additional tests can be added based on other functionalities and scenarios
-}
+    @Test
+    public void testAuthenticateByUserNameWithNullPassword() throws UserException {
+        User user = new User();
+        user.setName("john");
+        user.setPassword(null);
+        when(userRepository.findByName("john")).thenReturn(Optional.of(user));
+
+        CustomResponse<UserDTO> response = userService.authenticateByUserName("john", null);
+
+        assertThat(response.getStatus()).isEqualTo("failure");
+        assertThat(response.getMessage()).isEqualTo("Invalid Password");
+    }
