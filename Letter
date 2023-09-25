@@ -1,47 +1,62 @@
-package com.adp.eletter.repository;
+package com.adp.eletter.entitiy;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
-import com.adp.eletter.entitiy.Email;
+@Entity
+@Table(name = "email")
+public class Email {
 
-@Repository
-public interface EmailRepository extends JpaRepository<Email, Long>{
-	
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    private String content;
+
+    // Constructors, getters, setters and other utility methods...
 }
 
 package com.adp.eletter.repository;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.List;
-
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import com.adp.eletter.EletterApplication;
 import com.adp.eletter.entitiy.Email;
-import com.adp.eletter.repository.EmailRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = { EletterApplication.class })
-@AutoConfigureTestDatabase(replace = Replace.NONE)
+@Repository
+public interface EmailRepository extends JpaRepository<Email, Long> {
+    // No custom methods required as basic CRUD operations are inherited from JpaRepository
+}
+
+
+package com.adp.eletter.repository;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import java.util.List;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+
 @DataJpaTest
-public class EmailRepositoryIntegrationTest {
-
-    @Autowired
-    private TestEntityManager entityManager;
+public class EmailRepositoryTest {
 
     @Autowired
     private EmailRepository emailRepository;
+
+    @BeforeEach
+    public void setUp() {
+        // Here you can set up any initial data before each test.
+    }
+
+    @AfterEach
+    public void tearDown() {
+        // Clear the database after each test to ensure there's no interference between tests.
+        emailRepository.deleteAll();
+    }
 
     @Test
     public void whenSaveEmail_thenReturnSavedEmail() {
@@ -50,15 +65,16 @@ public class EmailRepositoryIntegrationTest {
         email.setContent("Sample content");
         // Add any other necessary properties for the Email entity
 
-        entityManager.persistAndFlush(email);
+        Email savedEmail = emailRepository.save(email);
 
-        Email found = emailRepository.findById(email.getId()).orElse(null);
+        Email found = emailRepository.findById(savedEmail.getId()).orElse(null);
+        assertThat(found).isNotNull();
         assertThat(found.getContent()).isEqualTo(email.getContent());
     }
 
     @Test
     public void whenInvalidId_thenReturnNull() {
-        Email fromDb = emailRepository.findById(9999L).orElse(null);
+        Email fromDb = emailRepository.findById(-9999L).orElse(null); // Use a negative ID assuming it won't exist
         assertThat(fromDb).isNull();
     }
 
@@ -72,15 +88,12 @@ public class EmailRepositoryIntegrationTest {
         email2.setContent("Second email");
         // Add any other necessary properties
 
-        List<Email> allEmailsBefore = emailRepository.findAll();
+        emailRepository.save(email1);
+        emailRepository.save(email2);
 
-        entityManager.persist(email1);
-        entityManager.persist(email2);
-        entityManager.flush();
+        List<Email> allEmails = emailRepository.findAll();
 
-        List<Email> allEmailsAfter = emailRepository.findAll();
-
-        assertThat(allEmailsAfter)
-        .hasSize(allEmailsBefore.size() + 2);
+        assertThat(allEmails).isNotEmpty();
+        assertThat(allEmails).contains(email1, email2);
     }
 }
