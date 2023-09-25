@@ -1,91 +1,108 @@
 package com.adp.eletter.api;
 
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.junit.runner.RunWith;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
-import com.adp.eletter.service.CandidateService;
+import com.adp.eletter.service.UserService;
+import com.itextpdf.text.DocumentException;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
-@AutoConfigureMockMvc
-public class CandidateControllerTest {
+import jakarta.servlet.http.HttpServletResponse;
 
-    @Autowired
-    private MockMvc mockMvc;
+@RestController
+@CrossOrigin
+public class PdfController {
 
-    @MockBean
-    private CandidateService candidateService;
+	@Autowired
+	private UserService userService;
 
-    @Test
-    public void testGetAllCandidate() throws Exception {
-        // Mock the service response
-        when(candidateService.getAllCandidates()).thenReturn(new ArrayList<>());
+	@GetMapping("/populatedocx/{candidateId}")
+	@ResponseBody
+	public void populateDocx (@PathVariable Long candidateId,HttpServletResponse response) throws IOException, DocumentException {
 
-        mockMvc.perform(get("/api/candidate/all"))
-               .andExpect(status().isOk())
-               .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-               .andExpect(jsonPath("$", hasSize(0)));  // Asserts that the list is empty
+		try {
+			String path = userService.populate(candidateId);
+			
+			if(path != null) {
+				response.setContentType("application/pdf");
+				response.setHeader("content-Disposition","attachment; filename = output.docx");
 
-        verify(candidateService, times(1)).getAllCandidates();
-    }
+				try(FileInputStream in = new FileInputStream(path); 
+						OutputStream out = response.getOutputStream()){
+					byte[] buffer = new byte[1024];
 
-    // You can continue to add other tests in a similar pattern.
+					int bytesRead; 
+					while((bytesRead = in.read(buffer)) !=-1){
+						out.write(buffer,0,bytesRead);
+					}
+				} catch(Exception e) {
+					e.printStackTrace();
+				}
+			}else {
+				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			}
+		} catch (Exception e) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
+		}
+	}
 }
-
 
 
 package com.adp.eletter.api;
 
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import java.util.List;
 
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.junit.runner.RunWith;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
-import com.adp.eletter.service.EmailService;
+import com.adp.eletter.dto.AuthenticationDTO;
+import com.adp.eletter.dto.CustomResponse;
+import com.adp.eletter.dto.UserDTO;
+import com.adp.eletter.service.UserService;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
-@AutoConfigureMockMvc
-public class EmailControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @MockBean
-    private EmailService emailService;
-
-    @Test
-    public void testGetAllEmails() throws Exception {
-        // Mock the service response
-        when(emailService.getAllEmails()).thenReturn(new ArrayList<>());
-
-        mockMvc.perform(get("/api/email/all"))
-               .andExpect(status().isOk())
-               .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-               .andExpect(jsonPath("$", hasSize(0)));  // Asserts that the list is empty
-
-        verify(emailService, times(1)).getAllEmails();
-    }
-
-    // You can continue to add other tests in a similar pattern.
+@RestController
+@RequestMapping("api/user")
+@CrossOrigin
+public class UserController {
+	
+	@Autowired(required=false)
+	private UserService userService;
+	 
+	@GetMapping("/all")
+	public ResponseEntity<List<UserDTO>> getAllUser(){
+		try {
+			List<UserDTO> userDTOList = userService.getAllUsers();
+			return new ResponseEntity<>(userDTOList,HttpStatus.OK);
+		} catch (Exception e) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
+		}
+	}
+	
+	@PostMapping("/authenticate")
+	public ResponseEntity<CustomResponse<UserDTO>> authenticate(@RequestBody AuthenticationDTO userRequestDTO){
+		try {
+			CustomResponse<UserDTO>  userDTO = userService.authenticateByUserName(userRequestDTO.getName(),userRequestDTO.getPassword());
+			return new ResponseEntity<>(userDTO ,HttpStatus.OK);
+		} catch (Exception e) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
+		}
+	}
 }
