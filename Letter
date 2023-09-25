@@ -42,3 +42,50 @@ public class CandidateControllerTest {
 
     // You can continue to add other tests in a similar pattern.
 }
+
+
+
+package com.adp.eletter.api;
+
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.web.servlet.MockMvc;
+
+import com.adp.eletter.service.EmailService;
+
+@RunWith(SpringRunner.class)
+@SpringBootTest
+@AutoConfigureMockMvc
+public class EmailControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockBean
+    private EmailService emailService;
+
+    @Test
+    public void testGetAllEmails() throws Exception {
+        // Mock the service response
+        when(emailService.getAllEmails()).thenReturn(new ArrayList<>());
+
+        mockMvc.perform(get("/api/email/all"))
+               .andExpect(status().isOk())
+               .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+               .andExpect(jsonPath("$", hasSize(0)));  // Asserts that the list is empty
+
+        verify(emailService, times(1)).getAllEmails();
+    }
+
+    // You can continue to add other tests in a similar pattern.
+}
