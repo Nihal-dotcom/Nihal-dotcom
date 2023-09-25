@@ -1,7 +1,7 @@
 package com.adp.eletter.api;
 
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -16,9 +16,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.adp.eletter.service.UserService;
 
-@WebMvcTest(PdfController.class)
+@WebMvcTest(UserController.class)
 @AutoConfigureMockMvc
-public class PdfControllerTest {
+public class UserControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -27,23 +27,40 @@ public class PdfControllerTest {
     private UserService userService;
 
     @InjectMocks
-    private PdfController pdfController;
+    private UserController userController;
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(pdfController).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(userController).build();
     }
 
     @Test
-    public void testPopulateDocx() throws Exception {
-        when(userService.populate(anyLong())).thenReturn("some/path");
+    public void testGetAllUser() throws Exception {
+        when(userService.getAllUsers()).thenReturn(new ArrayList<>());
 
-        mockMvc.perform(get("/populatedocx/1"))
+        mockMvc.perform(get("/api/user/all"))
                .andExpect(status().isOk());
 
-        verify(userService, times(1)).populate(1L);
+        verify(userService, times(1)).getAllUsers();
     }
 
-    // Add more test cases, especially for exceptional situations.
+    @Test
+    public void testAuthenticate() throws Exception {
+        // assuming you've an AuthenticationDTO object to post as request body.
+        AuthenticationDTO authDTO = new AuthenticationDTO();
+        authDTO.setName("test");
+        authDTO.setPassword("pass");
+        
+        when(userService.authenticateByUserName(eq("test"), eq("pass"))).thenReturn(new CustomResponse<>());
+
+        mockMvc.perform(post("/api/user/authenticate")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(authDTO)))
+               .andExpect(status().isOk());
+
+        verify(userService, times(1)).authenticateByUserName("test", "pass");
+    }
+
+    // Add more test cases.
 }
