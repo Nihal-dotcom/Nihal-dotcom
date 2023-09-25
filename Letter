@@ -4,180 +4,41 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import com.adp.eletter.service.CandidateService;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-class CandidateControllerTest {
+import com.adp.eletter.service.CandidateService;
 
-    @Mock
+@RunWith(SpringRunner.class)
+@SpringBootTest
+@AutoConfigureMockMvc
+public class CandidateControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockBean
     private CandidateService candidateService;
 
-    @InjectMocks
-    private CandidateController candidateController;
-
-    private MockMvc mockMvc;
-    private ObjectMapper objectMapper;
-
-    @BeforeEach
-    void setUp() throws Exception {
-        mockMvc = MockMvcBuilders.standaloneSetup(candidateController).build();
-        objectMapper = new ObjectMapper();
-    }
-
     @Test
-    void testGetAllCandidates() throws Exception {
-        // Assuming candidateService.getAllCandidates() returns a List<CandidateDTO> 
-        // you would set this up here. For simplicity, I'm skipping this step.
+    public void testGetAllCandidate() throws Exception {
+        // Mock the service response
+        when(candidateService.getAllCandidates()).thenReturn(new ArrayList<>());
 
         mockMvc.perform(get("/api/candidate/all"))
-               .andExpect(status().isOk());
+               .andExpect(status().isOk())
+               .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+               .andExpect(jsonPath("$", hasSize(0)));  // Asserts that the list is empty
 
         verify(candidateService, times(1)).getAllCandidates();
     }
 
-    // Similarly, you can write tests for other endpoints.
-    // For brevity, I'm not writing out every test, but you'd follow a similar pattern.
-
-    @Test
-    void testGetCandidateById() throws Exception {
-        Long id = 1L;
-
-        mockMvc.perform(get("/api/candidate/{id}", id))
-               .andExpect(status().isOk());
-
-        verify(candidateService, times(1)).getCandidateById(id);
-    }
-
-    // Add more tests for other methods in the CandidateController.
+    // You can continue to add other tests in a similar pattern.
 }
-
-@Test
-    void testGetCandidateByHRId() throws Exception {
-        String hrId = "HR001";
-        
-        mockMvc.perform(get("/api/candidate/assignedHr/{id}", hrId))
-               .andExpect(status().isOk());
-
-        verify(candidateService, times(1)).getCandidateByHRId(hrId);
-    }
-
-    @Test
-    void testGetCandidateByStatus() throws Exception {
-        OfferLetterStatus status = OfferLetterStatus.GENERATED;
-        
-        mockMvc.perform(get("/api/candidate/bystatus/{status}", status))
-               .andExpect(status().isOk());
-
-        verify(candidateService, times(1)).getCandidateByStatus(status);
-    }
-
-    @Test
-    void testUpdateCandidateStatus() throws Exception {
-        Long id = 1L;
-        OfferLetterStatus status = OfferLetterStatus.APPROVED;
-        
-        mockMvc.perform(put("/api/candidate/update-status/{id}/{status}", id, status))
-               .andExpect(status().isOk());
-
-        verify(candidateService, times(1)).updateOfferLetterStatus(id, status);
-    }
-
-    //... Add tests for other methods as needed ...
-}
-
-
-
-package com.adp.eletter.api;
-
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-import com.adp.eletter.service.EmailService;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-class EmailControllerTest {
-
-    @Mock
-    private EmailService emailService;
-
-    @InjectMocks
-    private EmailController emailController;
-
-    private MockMvc mockMvc;
-    private ObjectMapper objectMapper;
-
-    @BeforeEach
-    void setUp() throws Exception {
-        mockMvc = MockMvcBuilders.standaloneSetup(emailController).build();
-        objectMapper = new ObjectMapper();
-    }
-
-    @Test
-    void testGetAllEmails() throws Exception {
-        mockMvc.perform(get("/api/email/all"))
-               .andExpect(status().isOk());
-
-        verify(emailService, times(1)).getAllEmails();
-    }
-
-    @Test
-    void testCreateEmail() throws Exception {
-        EmailDTO emailDTO = new EmailDTO();
-        // Set necessary fields on emailDTO.
-
-        mockMvc.perform(post("/api/email/create")
-                        .content(objectMapper.writeValueAsString(emailDTO))
-                        .contentType(MediaType.APPLICATION_JSON))
-               .andExpect(status().isOk());
-
-        verify(emailService, times(1)).createEmail(any(EmailDTO.class));
-    }
-
-    // Add more tests for other methods in the EmailController.
-}
-
-@Test
-    void testGetAllEmailsFailure() throws Exception {
-        when(emailService.getAllEmails()).thenThrow(new Exception("Service Error"));
-
-        mockMvc.perform(get("/api/email/all"))
-               .andExpect(status().isBadRequest());
-
-        verify(emailService, times(1)).getAllEmails();
-    }
-
-    @Test
-    void testCreateEmailFailure() throws Exception {
-        EmailDTO emailDTO = new EmailDTO();
-        // Set necessary fields on emailDTO.
-        
-        when(emailService.createEmail(any(EmailDTO.class))).thenThrow(new Exception("Service Error"));
-
-        mockMvc.perform(post("/api/email/create")
-                        .content(objectMapper.writeValueAsString(emailDTO))
-                        .contentType(MediaType.APPLICATION_JSON))
-               .andExpect(status().isBadRequest());
-
-        verify(emailService, times(1)).createEmail(any(EmailDTO.class));
-    }
-
-    //... Add tests for other methods as needed ...
-}
-
