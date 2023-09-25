@@ -82,3 +82,10 @@ public class CandidateServiceImplIntegrationTest {
         reset(candidateRepository);
     }
 }
+
+
+ @BeforeEach
+    public void setUp() {
+        candidate1 = new Candidate(12l, "panda", "barenya", "panda@gmail.com", 1000000l, "ADP01", "Male", 9390999755l, "3gds", "wad", OfferLetterStatus.GENERATED, "12gnfc", "yes");
+        candidate2 = new Candidate(22l, "nandu", "surendhar", "davu@gmail.com", 1000000l, "ADP01", "Male", 9390999755l, "3ds", "wd", OfferLetterStatus.APPROVED, "12gnfc", "yes");
+
