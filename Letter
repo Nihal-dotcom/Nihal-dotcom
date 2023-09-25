@@ -1,50 +1,130 @@
-package com.adp.eletter.api;
+package test.test.java.com.adp.eletter.api;
 
-import java.util.List;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
+import java.util.Arrays;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import com.adp.eletter.api.EmailController;
 import com.adp.eletter.dto.CustomResponse;
 import com.adp.eletter.dto.EmailDTO;
-import com.adp.eletter.repository.EmailRepository;
 import com.adp.eletter.service.EmailService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-@RestController
-@RequestMapping("api/email")
-@CrossOrigin
-public class EmailController {
-	
-	@Autowired(required=false)
-	private EmailService emailService;
-	
-	@GetMapping("/all")
-	public ResponseEntity<List<EmailDTO>> getAllEmails(){
-		try {
-			
-			List<EmailDTO> emailDTOList = emailService.getAllEmails();
-			
-			return new ResponseEntity<>(emailDTOList ,HttpStatus.OK);
-		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
-		}
-	}
-	
-	@PostMapping("/create")
-	public ResponseEntity<CustomResponse<EmailDTO>> createEmail(@RequestBody EmailDTO emailDTO){
-		try {
-			CustomResponse<EmailDTO> response  = emailService.createEmail(emailDTO);
-			return new ResponseEntity<>(response ,HttpStatus.OK);
-		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
-		}
-	}
+@ExtendWith(SpringExtension.class)
+public class EmailControllerTest {
+
+    private MockMvc mockMvc;
+
+    @Mock
+    private EmailService emailService;
+
+    @InjectMocks
+    private EmailController emailController;
+
+    public EmailControllerTest() {
+        this.mockMvc = MockMvcBuilders.standaloneSetup(emailController).build();
+    }
+
+    @Test
+    public void testGetAllEmails() throws Exception {
+        EmailDTO emailDTO = new EmailDTO();  // Create a mock EmailDTO or set required properties
+        when(emailService.getAllEmails()).thenReturn(Arrays.asList(emailDTO));
+
+        mockMvc.perform(get("/api/email/all"))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testCreateEmail() throws Exception {
+        EmailDTO emailDTO = new EmailDTO();  // Create a mock EmailDTO or set required properties
+        CustomResponse<EmailDTO> response = new CustomResponse<>();
+        response.setData(emailDTO);
+        response.setStatus("success");
+
+        when(emailService.createEmail(any(EmailDTO.class))).thenReturn(response);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String emailJson = objectMapper.writeValueAsString(emailDTO);
+
+        mockMvc.perform(post("/api/email/create")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(emailJson))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testExceptionWhenFetchingEmails() throws Exception {
+        when(emailService.getAllEmails()).thenThrow(new RuntimeException("Error fetching emails"));
+
+        mockMvc.perform(get("/api/email/all"))
+            .andExpect(status().isBadRequest())
+            .andExpect(status().reason("Error fetching emails"));
+    }
+    
+    // ... [add more tests as needed]
+}
+
+// ... [previous imports]
+
+@ExtendWith(SpringExtension.class)
+public class EmailControllerTest {
+
+    // ... [previous setup and initial tests]
+
+    @Test
+    public void testExceptionWhenCreatingEmail() throws Exception {
+        EmailDTO emailDTO = new EmailDTO();
+        when(emailService.createEmail(emailDTO)).thenThrow(new RuntimeException("Error creating email"));
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String emailJson = objectMapper.writeValueAsString(emailDTO);
+
+        mockMvc.perform(post("/api/email/create")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(emailJson))
+            .andExpect(status().isBadRequest())
+            .andExpect(status().reason("Error creating email"));
+    }
+
+    @Test
+    public void testGetAllEmailsReturnsEmptyList() throws Exception {
+        when(emailService.getAllEmails()).thenReturn(Arrays.asList());
+
+        mockMvc.perform(get("/api/email/all"))
+            .andExpect(status().isOk())
+            .andExpect(content().string("[]"));
+    }
+
+    @Test
+    public void testValidCreatedEmailContent() throws Exception {
+        EmailDTO emailDTO = new EmailDTO();
+        // Populate your DTO with mock data if required
+        CustomResponse<EmailDTO> response = new CustomResponse<>();
+        response.setData(emailDTO);
+        response.setStatus("success");
+
+        when(emailService.createEmail(any(EmailDTO.class))).thenReturn(response);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String emailJson = objectMapper.writeValueAsString(emailDTO);
+
+        mockMvc.perform(post("/api/email/create")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(emailJson))
+            .andExpect(status().isOk())
+            .andExpect(content().json(emailJson));
+    }
+
+    // ... [you can continue with more test scenarios]
 }
