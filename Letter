@@ -1,16 +1,299 @@
- @Override
-    public CandidateDTO updateOfferLetterStatus(Long candidateId, OfferLetterStatus status) throws CandidateException {
-        Optional<Candidate> candidateOpt = candidateRepository.findById(candidateId);
-        if (candidateOpt.isPresent()) {
-            Candidate candidate = candidateOpt.get();
-            candidate.setOfferLetterStatus(status);
-            candidate = candidateRepository.save(candidate);
-            return modelMapper.map(candidate, CandidateDTO.class);
-        } else {
-            throw new CandidateException("Candidate not found with ID: " + candidateId);
-        }
-    }
+package com.adp.eletter.service;
 
-    // Continue implementing the rest of the methods from the CandidateService interface
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.adp.eletter.dto.CandidateDTO;
+import com.adp.eletter.entitiy.Candidate;
+import com.adp.eletter.entitiy.Candidate.OfferLetterStatus;
+import com.adp.eletter.entitiy.User;
+import com.adp.eletter.exception.CandidateException;
+import com.adp.eletter.exception.UserException;
+import com.adp.eletter.repository.CandidateRepository;
+import com.adp.eletter.repository.UserRepository;
+
+@Service
+public class CandidateServiceImpl implements CandidateService{
+
+	@Autowired
+	private CandidateRepository candidateRepository;
+
+	@Autowired
+	private UserRepository userRepository;
+
+	@Autowired
+	private ModelMapper modelMapper;
+
+	@Override
+	public List<CandidateDTO> getAllCandidates() throws CandidateException {
+		try {
+			List<Candidate> candidateEntityList = candidateRepository.findAll();
+
+			if(candidateEntityList.isEmpty()) {
+				throw new CandidateException("No candidates found !");
+			}
+
+			List<CandidateDTO> candidateDTOList = new ArrayList<>();
+			candidateEntityList.forEach(candidate -> {
+				CandidateDTO candidateDTO = modelMapper.map(candidate,CandidateDTO.class);
+				candidateDTOList.add(candidateDTO);
+			});
+			return candidateDTOList;
+		} catch (Exception e) {
+			throw new CandidateException(e.getMessage(),e);
+		}
+	}
+
+	@Override
+	public CandidateDTO getCandidateById(Long candidateId) throws CandidateException {
+		try {
+			Optional<Candidate> candidateEntity = candidateRepository.findById(candidateId);
+
+			if(candidateEntity.isEmpty()) {
+				throw new CandidateException("Candidate Not available");
+			}
+			CandidateDTO candidateDTO = modelMapper.map(candidateEntity, CandidateDTO.class);
+			return candidateDTO;
+		} catch (Exception e) {
+			throw new CandidateException(e.getMessage(),e);
+		}
+	}
+
+	@Override
+	public List<CandidateDTO> getCandidateByHRId(String assignedHRId) throws CandidateException {
+		try {
+			List<Candidate> candidateEntityList = candidateRepository.findAll();
+			List<Candidate> candidateEntityListByHRId = 
+					candidateEntityList.stream().filter(candidate -> 
+					candidate.getAssignedHRId().equals(assignedHRId)).toList();
+
+			if(candidateEntityListByHRId.isEmpty()) {
+				throw new CandidateException("No candidates found !");
+			}
+
+			List<CandidateDTO> candidateDTOListByHRId = new ArrayList<>();
+
+			candidateEntityListByHRId.forEach(candidate -> {
+				CandidateDTO candidateDTO = modelMapper.map(candidate, CandidateDTO.class);
+				candidateDTOListByHRId.add(candidateDTO);
+			});		
+			return candidateDTOListByHRId;
+		} catch (Exception e) {
+			throw new CandidateException(e.getMessage(),e);
+		}
+	}
+
+	@Override
+	public List<CandidateDTO> getCandidateByStatus(OfferLetterStatus offerLetterStatus) throws CandidateException {
+		try {
+			List<Candidate> candidateEntityList = candidateRepository.findAll();
+			List<Candidate> candidateEntityListWithStatus =
+					candidateEntityList.stream()
+					.filter(candidate -> candidate.getOfferLetterStatus() == offerLetterStatus).toList();
+
+			if(candidateEntityListWithStatus.isEmpty()) {
+				throw new CandidateException("No candidates found !");
+			}
+
+			List<CandidateDTO> candidateDTOListWithNewStatus = new ArrayList<>();
+
+			candidateEntityListWithStatus.forEach(candidate -> {
+				CandidateDTO candidateDTO = modelMapper.map(candidate, CandidateDTO.class);
+				candidateDTOListWithNewStatus.add(candidateDTO);
+			});	
+			return candidateDTOListWithNewStatus;
+		} catch (Exception e) {
+			throw new CandidateException(e.getMessage(),e);
+		}
+	}
+
+	@Override
+	public CandidateDTO updateOfferLetterStatus(Long candidateId, OfferLetterStatus status) throws CandidateException {
+		try {
+			Optional<Candidate> candidateEntity = candidateRepository.findById(candidateId);
+
+			if(candidateEntity.isEmpty()) {
+				throw new CandidateException("Candidate Not available");
+			}
+
+			Candidate candidate = candidateEntity.get();
+
+			candidate.setOfferLetterStatus(status);
+
+			Candidate updatedCandidate = candidateRepository.save(candidate);
+
+			CandidateDTO updatedCandidateDTO = modelMapper.map(updatedCandidate, CandidateDTO.class);
+
+			return updatedCandidateDTO;
+		} catch (Exception e) {
+			throw new CandidateException(e.getMessage(),e);
+		}	
+	}
+
+	@Override
+	public CandidateDTO updateTemplate(Long candidateId, String template) throws CandidateException {
+		try {
+			Optional<Candidate> candidateEntity = candidateRepository.findById(candidateId);
+
+			if(candidateEntity.isEmpty()) {
+				throw new CandidateException("Candidate Not available");
+			}
+
+			Candidate candidate = candidateEntity.get();
+
+			candidate.setSelectedTemplateId(template);
+
+			Candidate updatedCandidate = candidateRepository.save(candidate);
+
+			CandidateDTO updatedCandidateDTO = modelMapper.map(updatedCandidate, CandidateDTO.class);
+
+			return updatedCandidateDTO;
+		} catch (Exception e) {
+			throw new CandidateException(e.getMessage(),e);
+		}	
+	}
+
+	@Override
+	public List<CandidateDTO> getCandidateByHRIdAndByStatus(String assignedHRId, OfferLetterStatus offerLetterStatus)
+			throws CandidateException {
+		try {
+			List<Candidate> candidateEntityList = candidateRepository.findAll();
+			List<Candidate> candidateEntityListByHRId = 
+					candidateEntityList.stream().filter(candidate -> 
+					candidate.getAssignedHRId().equals(assignedHRId)).toList();
+
+			if(candidateEntityListByHRId.isEmpty()) {
+				throw new CandidateException("No candidates found !");
+			}
+
+			List<Candidate> candidateEntityListWithStatus =
+					candidateEntityListByHRId.stream()
+					.filter(candidate -> candidate.getOfferLetterStatus() == offerLetterStatus).toList();
+
+			if(candidateEntityListWithStatus.isEmpty()) {
+				throw new CandidateException("Candidate Not available");
+			}
+
+			List<CandidateDTO> candidateDTOListWithStatus = new ArrayList<>();
+
+			candidateEntityListWithStatus.forEach(candidate -> {
+				CandidateDTO candidateDTO = modelMapper.map(candidate, CandidateDTO.class);
+				candidateDTOListWithStatus.add(candidateDTO);
+			});	
+			return candidateDTOListWithStatus;
+		} catch (Exception e) {
+			throw new CandidateException(e.getMessage(),e);
+		}
+
+	}
+
+	@Override
+	public List<CandidateDTO> getCandidateUnderManager(String managerId) throws CandidateException {
+		try {
+			List<User> hrEntities = userRepository.findByRoleAndManagerId("hr",managerId);
+			if(hrEntities.isEmpty()) {
+				throw new CandidateException("No HRs found..");
+			}
+
+			List<String> hrNames = hrEntities.stream().map(User::getName).collect(Collectors.toList());
+
+			List<Candidate> allCandidates = candidateRepository.findAll();
+
+			List<Candidate> candidateUnderManager = allCandidates.stream()
+					.filter(candidate -> hrNames.contains(candidate.getAssignedHRId()))
+					.collect(Collectors.toList());
+
+			if(candidateUnderManager.isEmpty()) {
+				throw new CandidateException("No candidates found..");
+			}
+
+			List<CandidateDTO> candidateDTOList = new ArrayList<>();
+
+			candidateUnderManager.forEach(candidate -> {
+				CandidateDTO candidateDTO = modelMapper.map(candidate, CandidateDTO.class);
+				candidateDTOList.add(candidateDTO);
+			});
+
+			return candidateDTOList;
+
+		} catch (Exception e) {
+			throw new CandidateException(e.getMessage(),e);
+		}
+	}
+
+	@Override
+	public List<CandidateDTO> getCandidateUnderManagerIdAndByStatus(String managerId, OfferLetterStatus offerLetterStatus)
+			throws CandidateException {
+		try {
+			List<User> hrEntities = userRepository.findByRoleAndManagerId("hr",managerId);
+			if(hrEntities.isEmpty()) {
+				throw new CandidateException("No HRs found..");
+			}
+
+			List<String> hrNames = hrEntities.stream().map(User::getName).toList();
+
+			List<Candidate> allCandidates = candidateRepository.findAll();
+
+			List<Candidate> candidateUnderManager = allCandidates.stream()
+					.filter(candidate -> hrNames.contains(candidate.getAssignedHRId()))
+					.collect(Collectors.toList());
+
+			if(candidateUnderManager.isEmpty()) {
+				throw new CandidateException("No candidates found..");
+			}
+
+			List<Candidate> candidateEntityListWithStatus =
+					candidateUnderManager.stream()
+					.filter(candidate -> candidate.getOfferLetterStatus() == offerLetterStatus).toList();
+
+			List<CandidateDTO> candidateDTOList = new ArrayList<>();
+
+			candidateEntityListWithStatus.forEach(candidate -> {
+				CandidateDTO candidateDTO = modelMapper.map(candidate, CandidateDTO.class);
+				candidateDTOList.add(candidateDTO);
+			});
+
+			return candidateDTOList;
+		} catch (Exception e) {
+			throw new CandidateException(e.getMessage(),e);
+		}
+	}
+	
+
+	
+
+	@Override
+	public CandidateDTO updateRemarks(Long candidateId, String user, String remarks) throws CandidateException {
+		try {
+			Optional<Candidate> candidateEntity = candidateRepository.findById(candidateId);
+
+			if(candidateEntity.isEmpty()) {
+				throw new CandidateException("Candidate Not available");
+			}
+
+			Optional<User> userEntity= userRepository.findById(user);
+
+			if(userEntity.isEmpty()) {
+				throw new UserException("User Not available");
+			}
+			Candidate candidate = candidateEntity.get();
+
+			if(candidate.getAssignedHRId().equals(user)) {
+				candidate.setRemarksByHR(remarks);
+			} else {
+				candidate.setRemarksByManager(remarks);
+			}
+			Candidate updatedCandidate = candidateRepository.save(candidate);
+			CandidateDTO updatedCandidateDTO = modelMapper.map(updatedCandidate, CandidateDTO.class);
+			return updatedCandidateDTO;
+		} catch (Exception e) {
+			throw new CandidateException(e.getMessage(),e);
+		}	
+	}
 }
