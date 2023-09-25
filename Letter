@@ -1,52 +1,88 @@
-@Test
-    public void testGetAllUsersReturnsEmptyList() throws UserException {
-        when(userRepository.findAll()).thenReturn(Arrays.asList());
+package com.adp.eletter.entitiy;
 
-        Exception exception = org.junit.jupiter.api.Assertions.assertThrows(UserException.class, () -> {
-            userService.getAllUsers();
-        });
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
-        assertThat(exception.getMessage()).isEqualTo("No users found !");
-    }
 
-    @Test
-    public void testGetAllUsersThrowsException() throws UserException {
-        when(userRepository.findAll()).thenThrow(new RuntimeException("DB Error"));
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@ToString
+@Entity
+@Table(name = "batch2_ttfive_candidate")
+public class Candidate {
+	@Id
+	@Column(name = "candidate_Id")
+	private Long candidateId;
+	
+	@Column(name = "first_Name")
+	private String firstName;
+	
+	@Column(name = "last_Name")
+	private String lastName;
+	
+	@Column(name = "email")
+	private String email;
+	
+	@Column(name = "pay")
+	private Long pay;
+	
+	@Column(name = "job_Id")
+	private String jobId;
+	
+	@Column(name = "gender")
+	private String gender;
+	
+	@Column(name = "mobile")
+	private Long mobile;
+	
+	@Column(name = "joining_Date")
+	private String joiningDate;
+	
+	@Column(name = "assignedHRId")
+	private String assignedHRId;
+	
+	@Enumerated(EnumType.STRING)
+	@Column(name = "offerLetterStatus")
+	private OfferLetterStatus offerLetterStatus;
+	
+	@Column(name = "selected_Template_Id")
+	private String selectedTemplateId;
+	
+	@Column(name = "generated_Letter_Destination")
+	private String generatedLetterDestination;
+	
+	@Column(name = "remarks_By_HR")
+	private String remarksByHR;
+	
+	@Column(name = "remarks_By_Manager")
+	private String remarksByManager;
 
-        Exception exception = org.junit.jupiter.api.Assertions.assertThrows(UserException.class, () -> {
-            userService.getAllUsers();
-        });
+	public OfferLetterStatus getOfferLetterStatus() {
+		return offerLetterStatus;
+	}
 
-        assertThat(exception.getMessage()).isEqualTo("DB Error");
-    }
+	public void setOfferLetterStatus(OfferLetterStatus offerLetterStatus) {
+		this.offerLetterStatus = offerLetterStatus;
+	}
 
-    @Test
-    public void testAuthenticateByUserNameThrowsException() throws UserException {
-        when(userRepository.findByName(anyString())).thenThrow(new RuntimeException("DB Error"));
+	public enum OfferLetterStatus {
+			GENERATED,
+			PENDING,
+			APPROVED,
+			REJECTED,
+			SENTEMAIL
+	}
+}
 
-        CustomResponse<UserDTO> response = userService.authenticateByUserName("john", "pass123");
 
-        assertThat(response.getStatus()).isEqualTo("failure");
-        assertThat(response.getMessage()).isEqualTo("Something went wrong");
-    }
-
-    @Test
-    public void testAuthenticateByUserNameWithNullName() throws UserException {
-        CustomResponse<UserDTO> response = userService.authenticateByUserName(null, "pass123");
-
-        assertThat(response.getStatus()).isEqualTo("failure");
-        assertThat(response.getMessage()).isEqualTo("No body with the username");
-    }
-
-    @Test
-    public void testAuthenticateByUserNameWithNullPassword() throws UserException {
-        User user = new User();
-        user.setName("john");
-        user.setPassword(null);
-        when(userRepository.findByName("john")).thenReturn(Optional.of(user));
-
-        CustomResponse<UserDTO> response = userService.authenticateByUserName("john", null);
-
-        assertThat(response.getStatus()).isEqualTo("failure");
-        assertThat(response.getMessage()).isEqualTo("Invalid Password");
-    }
