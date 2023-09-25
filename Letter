@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,283 +14,71 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
 import com.adp.eletter.dto.CustomResponse;
-import com.adp.eletter.dto.EmailDTO;
-import com.adp.eletter.entitiy.Email;
-import com.adp.eletter.exception.EmailException;
-import com.adp.eletter.repository.EmailRepository;
-import com.adp.eletter.service.EmailServiceImpl;
+import com.adp.eletter.dto.UserDTO;
+import com.adp.eletter.entitiy.User;
+import com.adp.eletter.exception.UserException;
+import com.adp.eletter.repository.UserRepository;
+import com.adp.eletter.service.UserServiceImpl;
 
 @ExtendWith(MockitoExtension.class)
-public class EmailServiceImplTest {
+public class UserServiceImplTest {
 
     @Mock
-    private EmailRepository emailRepository;
+    private UserRepository userRepository;
 
     @Mock
     private ModelMapper modelMapper;
 
     @InjectMocks
-    private EmailServiceImpl emailService;
+    private UserServiceImpl userService;
 
     @Test
-    public void testGetAllEmails() throws EmailException {
-        // mock data
-        Email email = new Email();
-        EmailDTO emailDTO = new EmailDTO();
-        when(emailRepository.findAll()).thenReturn(Arrays.asList(email));
-        when(modelMapper.map(email, EmailDTO.class)).thenReturn(emailDTO);
+    public void testGetAllUsers() throws UserException {
+        User user = new User();
+        UserDTO userDTO = new UserDTO();
+        when(userRepository.findAll()).thenReturn(Arrays.asList(user));
+        when(modelMapper.map(user, UserDTO.class)).thenReturn(userDTO);
 
-        List<EmailDTO> result = emailService.getAllEmails();
-
-        assertThat(result).hasSize(1);
-        assertThat(result.get(0)).isEqualTo(emailDTO);
+        assertThat(userService.getAllUsers()).contains(userDTO);
     }
 
     @Test
-    public void testCreateEmail() throws EmailException {
-        EmailDTO emailDTO = new EmailDTO();
-        Email email = new Email();
-        when(modelMapper.map(emailDTO, Email.class)).thenReturn(email);
-        when(emailRepository.save(email)).thenReturn(email);
+    public void testAuthenticateByUserNameSuccess() throws UserException {
+        User user = new User();
+        user.setName("john");
+        user.setPassword("pass123");
+        UserDTO userDTO = new UserDTO();
+        when(userRepository.findByName("john")).thenReturn(Optional.of(user));
+        when(modelMapper.map(user, UserDTO.class)).thenReturn(userDTO);
 
-        CustomResponse<EmailDTO> response = emailService.createEmail(emailDTO);
+        CustomResponse<UserDTO> response = userService.authenticateByUserName("john", "pass123");
 
-        assertThat(response.getMessage()).isEqualTo("Successfully sent mail");
-        assertThat(response.getData()).isEqualTo(emailDTO);
+        assertThat(response.getStatus()).isEqualTo("success");
+        assertThat(response.getMessage()).isEqualTo("Successfully logged in");
     }
 
-    // Add more test methods for different scenarios like exception handling, etc.
+    @Test
+    public void testAuthenticateByUserNameInvalidPassword() throws UserException {
+        User user = new User();
+        user.setName("john");
+        user.setPassword("pass123");
+        when(userRepository.findByName("john")).thenReturn(Optional.of(user));
+
+        CustomResponse<UserDTO> response = userService.authenticateByUserName("john", "wrongpass");
+
+        assertThat(response.getStatus()).isEqualTo("failure");
+        assertThat(response.getMessage()).isEqualTo("Invalid Password");
+    }
+
+    @Test
+    public void testAuthenticateByUserNameNotFound() throws UserException {
+        when(userRepository.findByName("john")).thenReturn(Optional.empty());
+
+        CustomResponse<UserDTO> response = userService.authenticateByUserName("john", "pass123");
+
+        assertThat(response.getStatus()).isEqualTo("failure");
+        assertThat(response.getMessage()).isEqualTo("No body with the username");
+    }
+
+    // ... Additional tests can be added based on other functionalities and scenarios
 }
-
-@ExtendWith(MockitoExtension.class)
-public class EmailServiceImplTest {
-
-    // ... [previous mock definitions and setup]
-
-    @Test
-    public void testGetAllEmailsReturnsEmptyList() throws EmailException {
-        // Expect an exception since the service throws an exception when no emails are found
-        when(emailRepository.findAll()).thenReturn(Arrays.asList());
-
-        Exception exception = org.junit.jupiter.api.Assertions.assertThrows(EmailException.class, () -> {
-            emailService.getAllEmails();
-        });
-
-        assertThat(exception.getMessage()).isEqualTo("No emails found");
-    }
-
-    @Test
-    public void testGetAllEmailsThrowsException() throws EmailException {
-        // Simulate an exception when calling the repository
-        when(emailRepository.findAll()).thenThrow(new RuntimeException("DB Error"));
-
-        Exception exception = org.junit.jupiter.api.Assertions.assertThrows(EmailException.class, () -> {
-            emailService.getAllEmails();
-        });
-
-        assertThat(exception.getMessage()).isEqualTo("DB Error");
-    }
-
-    @Test
-    public void testCreateEmailThrowsException() throws EmailException {
-        EmailDTO emailDTO = new EmailDTO();
-        // Simulate an exception during email creation
-        when(modelMapper.map(emailDTO, Email.class)).thenThrow(new RuntimeException("Mapping Error"));
-
-        Exception exception = org.junit.jupiter.api.Assertions.assertThrows(EmailException.class, () -> {
-            emailService.createEmail(emailDTO);
-        });
-
-        assertThat(exception.getMessage()).isEqualTo("Mapping Error");
-    }
-
-    // ... [previous test methods]
-}
-
-
-
-
-
-package com.adp.eletter.service;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.apache.poi.xwpf.usermodel.XWPFParagraph;
-import org.apache.poi.xwpf.usermodel.XWPFPicture;
-import org.apache.poi.xwpf.usermodel.XWPFRun;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.stereotype.Service;
-
-import com.adp.eletter.dto.CandidateDTO;
-import com.adp.eletter.dto.CustomResponse;
-import com.adp.eletter.dto.UserDTO;
-import com.adp.eletter.entitiy.User;
-import com.adp.eletter.exception.UserException;
-import com.adp.eletter.repository.UserRepository;
-import com.itextpdf.text.Document;
-import com.itextpdf.text.Image;
-import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.pdf.PdfWriter;
-
-@Service
-public class UserServiceImpl implements UserService{
-
-	@Autowired
-	private UserRepository userRepository;
-
-	@Autowired
-	private ModelMapper modelMapper;
-
-	@Autowired
-	private CandidateServiceImpl candidateServiceImpl;
-
-	@Override
-	public List<UserDTO> getAllUsers() throws UserException {
-		try {
-			List<User> userEntityList = userRepository.findAll();
-
-			if(userEntityList.isEmpty()) {
-				throw new UserException("No users found !");
-			}
-
-			List<UserDTO> userDTOList = new ArrayList<>();
-
-			userEntityList.forEach(user -> {
-				UserDTO userDTO = modelMapper.map(user,UserDTO.class);
-				userDTOList.add(userDTO);
-			});
-			return userDTOList;
-		} catch (Exception e) {
-			throw new UserException(e.getMessage(),e);
-		}
-	}
-
-	@Override
-	public CustomResponse<UserDTO> authenticateByUserName(String name, String password) throws UserException {
-
-		try {
-			Optional<User> userEntity = userRepository.findByName(name);
-
-			if(userEntity.isPresent()){
-				User user = userEntity.get();
-				if(password.equals(user.getPassword())) {
-					UserDTO userDTO = modelMapper.map(user, UserDTO.class);
-					CustomResponse<UserDTO> response = new CustomResponse<>();
-					response.setData(userDTO);
-					response.setStatus("success");
-					response.setMessage("Successfully logged in");
-					return response;
-				} else {
-					//					throw new UserException("Invalid password");
-					CustomResponse<UserDTO> response = new CustomResponse<>();
-					//					response.setData(null);
-					response.setStatus("failure");
-					response.setMessage("Invalid Password");
-					return response;
-				}
-			} else {
-				//				throw new UserException("Something went wrong..");
-				CustomResponse<UserDTO> response = new CustomResponse<>();
-				//				response.setData(null);
-				response.setStatus("failure");
-				response.setMessage("No body with the username");
-				return response;
-			}
-		} catch (Exception e) {
-			//			throw new UserException("Invalid password");
-			CustomResponse<UserDTO> response = new CustomResponse<>();
-			//			response.setData(null);
-			response.setStatus("failure");
-			response.setMessage("Something went wrong");
-			return response;
-		}
-
-	}
-
-	public String populate(Long candidateId) {
-		try {
-			CandidateDTO candidate = candidateServiceImpl.getCandidateById(candidateId);
-			
-			String destinationPath = "C:\\Users\\pandabar\\Downloads\\batch2-eletter-ttfivee-backend-repo (2)\\batch2-eletter-ttfivee-backend-repo\\src\\main\\resources\\static\\candidates\\" +
-					candidate.getCandidateId()+candidate.getSelectedTemplateId() +".docx";
-			
-			String candidateTemplate = candidate.getSelectedTemplateId();
-			ClassPathResource fileResource = new ClassPathResource("./static/assets/"+ candidateTemplate +".docx");
-			FileInputStream templateInputStream = new FileInputStream(fileResource.getFile());
-			XWPFDocument document = new XWPFDocument(templateInputStream);
-
-			Map<String,String> map = new HashMap<>();
-			map.put("{localDate}", "12-08-2023");
-			map.put("{name}", candidate.getFirstName() + " " + candidate.getLastName());
-			map.put("{company}","ADP" );
-			map.put("{pay}", candidate.getPay().toString());
-			map.put("{location}", "hyderabad");
-
-			for(XWPFParagraph paragraph : document.getParagraphs()) {
-				for(XWPFRun run : paragraph.getRuns()) {
-					String text = run.getText(0);
-					for(Map.Entry<String, String> m : map.entrySet()) {
-						if(text!=null) {
-							text = text.replace(m.getKey(),m.getValue());
-						}
-					}
-					run.setText(text, 0);
-				}
-			}
-			
-			FileOutputStream file = new FileOutputStream(destinationPath,false);
-			document.write(file);
-			file.close();
-
-			File targetFile = new File(destinationPath);
-			if(targetFile.exists()){
-				// Load the DOCX file
-				FileInputStream fis = new FileInputStream(destinationPath);
-				XWPFDocument document1 = new XWPFDocument(fis);
-				// Create a PDF document
-				Document pdfDocument = new Document();
-				String pdfPath = "C:\\Users\\pandabar\\Downloads\\batch2-eletter-ttfivee-backend-repo (2)\\batch2-eletter-ttfivee-backend-repo\\src\\main\\resources\\static\\candidatesPDF\\" +
-						candidate.getCandidateId()+candidate.getSelectedTemplateId() +".pdf";
-				PdfWriter.getInstance(pdfDocument, new FileOutputStream(pdfPath));
-				pdfDocument.open();
-				// Process each paragraph
-				for (XWPFParagraph paragraph : document1.getParagraphs()) {
-					// Iterate through the runs (text and images) within the paragraph
-					for (XWPFRun run : paragraph.getRuns()) {
-						// Extract and add text to PDF
-						String text = run.getText(0);
-						if (text != null && !text.isEmpty()) {
-							pdfDocument.add(new Paragraph(text));
-						}
-						// Extract and add images to PDF
-						for (XWPFPicture picture : run.getEmbeddedPictures()) {
-							byte[] bytes = picture.getPictureData().getData();
-							Image image = Image.getInstance(bytes);
-							image.scaleAbsolute((float)picture.getWidth(), (float) picture.getDepth());
-							pdfDocument.add(image);
-						}
-					}
-				}
-
-				pdfDocument.close();
-				fis.close();
-				candidate.setGeneratedLetterDestination(pdfPath);
-				return pdfPath;
-			}
-		}catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-}
-
