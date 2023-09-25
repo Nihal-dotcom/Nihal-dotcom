@@ -27,7 +27,7 @@ import com.adp.eletter.exception.CandidateException;
 import com.adp.eletter.repository.CandidateRepository;
 
 @ExtendWith(MockitoExtension.class)
-public class CandidatServiceImplIntegregationTest {
+public class CandidateServiceImplIntegrationTest {
 
     @Mock
     private CandidateRepository candidateRepository;
@@ -39,7 +39,7 @@ public class CandidatServiceImplIntegregationTest {
 
     @BeforeEach
     public void setUp() {
-        panda = new Candidate(
+        candidate1 = new Candidate(
             12l,                        // candidateId
             "panda",                    // firstName
             "barenya",                  // lastName
@@ -57,7 +57,7 @@ public class CandidatServiceImplIntegregationTest {
             "Remark by Manager"         // remarksByManager (added as an example, adjust accordingly)
         );
 
-        nandu = new Candidate(
+        candidate2 = new Candidate(
             22l,                        // candidateId
             "nandu",                    // firstName
             "surendhar",                // lastName
@@ -74,7 +74,6 @@ public class CandidatServiceImplIntegregationTest {
             "Remark by HR",             // remarksByHR (added as an example, adjust accordingly)
             "Remark by Manager"         // remarksByManager (added as an example, adjust accordingly)
         );
-    
 
         List<Candidate> allCandidates = Arrays.asList(candidate1, candidate2);
 
