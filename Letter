@@ -1,65 +1,55 @@
-package test.test.java.com.adp.eletter.repository;
+package com.adp.eletter.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
+import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.stereotype.Service;
 
-import com.adp.eletter.EletterApplication;
-import com.adp.eletter.entitiy.User;
-import com.adp.eletter.repository.UserRepository;
+import com.adp.eletter.dto.CustomResponse;
+import com.adp.eletter.dto.EmailDTO;
+import com.adp.eletter.entitiy.Email;
+import com.adp.eletter.exception.EmailException;
+import com.adp.eletter.repository.EmailRepository;
+import com.adp.eletter.utility.ResponseUtil;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = { EletterApplication.class })
-@AutoConfigureTestDatabase(replace = Replace.NONE)
-@DataJpaTest
-public class UserRepositoryIntegrationTest {
+@Service
+public class EmailServiceImpl implements EmailService{
 
-    @Autowired
-    private TestEntityManager entityManager;
+	@Autowired
+	private EmailRepository emailRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+	@Autowired
+	private ModelMapper modelMapper;
 
-    @Test
-    public void whenSaveUser_thenReturnSavedUser() {
-        User user = new User("JohnDoe", "password123", "john.doe@example.com", "ADMIN", "ManagerA");
-        entityManager.persistAndFlush(user);
+	@Override
+	public List<EmailDTO> getAllEmails() throws EmailException {
+		try {
+			List<Email> emailEntityList = emailRepository.findAll();
+			if(emailEntityList.isEmpty()) {
+				throw new EmailException("No emails found");
+			}
+			List<EmailDTO> emailDTOList = new ArrayList<>();
 
-        User found = userRepository.findById(user.getName()).orElse(null);
-        assertThat(found.getEmail()).isEqualTo(user.getEmail());
-    }
+			emailEntityList.forEach(email -> {
+				EmailDTO emailDTO = modelMapper.map(email, EmailDTO.class);
+				emailDTOList.add(emailDTO);
+			});
+			return emailDTOList;
+		} catch (Exception e) {
+			throw new EmailException(e.getMessage(),e);
+		}
+	}
 
-    @Test
-    public void whenInvalidName_thenReturnNull() {
-        User fromDb = userRepository.findById("NonExistentUser").orElse(null);
-        assertThat(fromDb).isNull();
-    }
-
-    @Test
-    public void givenSetOfUsers_whenFindAll_thenReturnAllUsers() {
-        User user1 = new User("JohnDoe", "password123", "john.doe@example.com", "ADMIN", "ManagerA");
-        User user2 = new User("JaneSmith", "password456", "jane.smith@example.com", "USER", "ManagerB");
-
-        List<User> allUsersBefore = userRepository.findAll();
-
-        entityManager.persist(user1);
-        entityManager.persist(user2);
-        entityManager.flush();
-
-        List<User> allUsersAfter = userRepository.findAll();
-
-        assertThat(allUsersAfter)
-        .hasSize(allUsersBefore.size() + 2);
-    }
+	@Override
+	public CustomResponse<EmailDTO> createEmail(EmailDTO emailDTO) throws EmailException {
+		try {
+			Email email = modelMapper.map(emailDTO, Email.class);
+			emailRepository.save(email);
+			return ResponseUtil.createSuccessResponse(emailDTO, "Successfully sent mail");
+		} catch (Exception e) {
+			throw new EmailException(e.getMessage(),e);
+		}
+	}
 }
