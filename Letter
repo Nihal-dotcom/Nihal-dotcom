@@ -1,16 +1,86 @@
-Test
-    public void whenCandidatesExistUnderHR_thenListShouldReturn() throws CandidateException {
-        String hrId = "3gds";
-        List<CandidateDTO> candidates = candidateServiceImpl.getCandidateByHRId(hrId);
-        assertThat(candidates).isNotNull();
-        assertThat(candidates).hasSizeGreaterThan(0);
+package com.adp.eletter.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import com.adp.eletter.entitiy.Email;
+
+@Repository
+public interface EmailRepository extends JpaRepository<Email, Long>{
+	
+}
+
+package com.adp.eletter.repository;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import com.adp.eletter.EletterApplication;
+import com.adp.eletter.entitiy.Email;
+import com.adp.eletter.repository.EmailRepository;
+
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = { EletterApplication.class })
+@AutoConfigureTestDatabase(replace = Replace.NONE)
+@DataJpaTest
+public class EmailRepositoryIntegrationTest {
+
+    @Autowired
+    private TestEntityManager entityManager;
+
+    @Autowired
+    private EmailRepository emailRepository;
+
+    @Test
+    public void whenSaveEmail_thenReturnSavedEmail() {
+        Email email = new Email();
+        email.setId(1L);
+        email.setContent("Sample content");
+        // Add any other necessary properties for the Email entity
+
+        entityManager.persistAndFlush(email);
+
+        Email found = emailRepository.findById(email.getId()).orElse(null);
+        assertThat(found.getContent()).isEqualTo(email.getContent());
     }
 
     @Test
-    public void whenStatusIsGiven_thenCandidatesWithThatStatusShouldBeReturned() throws CandidateException {
-        OfferLetterStatus status = OfferLetterStatus.GENERATED;
-        List<CandidateDTO> candidates = candidateServiceImpl.getCandidateByStatus(status);
-        for (CandidateDTO candidate : candidates) {
-            assertThat(candidate.getOfferLetterStatus()).isEqualTo(status);
-        }
+    public void whenInvalidId_thenReturnNull() {
+        Email fromDb = emailRepository.findById(9999L).orElse(null);
+        assertThat(fromDb).isNull();
     }
+
+    @Test
+    public void givenSetOfEmails_whenFindAll_thenReturnAllEmails() {
+        Email email1 = new Email();
+        email1.setContent("First email");
+        // Add any other necessary properties
+
+        Email email2 = new Email();
+        email2.setContent("Second email");
+        // Add any other necessary properties
+
+        List<Email> allEmailsBefore = emailRepository.findAll();
+
+        entityManager.persist(email1);
+        entityManager.persist(email2);
+        entityManager.flush();
+
+        List<Email> allEmailsAfter = emailRepository.findAll();
+
+        assertThat(allEmailsAfter)
+        .hasSize(allEmailsBefore.size() + 2);
+    }
+}
