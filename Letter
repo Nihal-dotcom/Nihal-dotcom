@@ -1,142 +1,50 @@
-package test.test.java.com.adp.eletter.api;
+package com.adp.eletter.api;
 
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import java.util.List;
 
-import java.util.Arrays;
-import java.util.Optional;
-
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.adp.eletter.api.CandidateController;
-import com.adp.eletter.dto.CandidateDTO;
-import com.adp.eletter.entitiy.Candidate.OfferLetterStatus;
-import com.adp.eletter.service.CandidateService;
+import com.adp.eletter.dto.CustomResponse;
+import com.adp.eletter.dto.EmailDTO;
+import com.adp.eletter.repository.EmailRepository;
+import com.adp.eletter.service.EmailService;
 
-@ExtendWith(SpringExtension.class)
-public class CandidateControllerTest {
-
-    private MockMvc mockMvc;
-
-    @Mock
-    private CandidateService candidateService;
-
-    @InjectMocks
-    private CandidateController candidateController;
-
-    public CandidateControllerTest() {
-        this.mockMvc = MockMvcBuilders.standaloneSetup(candidateController).build();
-    }
-
-    @Test
-    public void testGetAllCandidate() throws Exception {
-        CandidateDTO candidateDTO = new CandidateDTO();
-        when(candidateService.getAllCandidates()).thenReturn(Arrays.asList(candidateDTO));
-
-        mockMvc.perform(get("/api/candidate/all"))
-            .andExpect(status().isOk());
-    }
-
-    @Test
-    public void testGetCandidateById() throws Exception {
-        CandidateDTO candidateDTO = new CandidateDTO();
-        when(candidateService.getCandidateById(1L)).thenReturn(candidateDTO);
-
-        mockMvc.perform(get("/api/candidate/1"))
-            .andExpect(status().isOk());
-    }
-
-    // ... add tests for other endpoints
-
-    @Test
-    public void testUpdateCandidateStatus() throws Exception {
-        CandidateDTO candidateDTO = new CandidateDTO();
-        when(candidateService.updateOfferLetterStatus(1L, OfferLetterStatus.APPROVED)).thenReturn(candidateDTO);
-
-        mockMvc.perform(put("/api/candidate/update-status/1/APPROVED")
-            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk());
-    }
-
-    @Test
-    public void testExceptionHandling() throws Exception {
-        when(candidateService.getAllCandidates()).thenThrow(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error message"));
-
-        mockMvc.perform(get("/api/candidate/all"))
-            .andExpect(status().isBadRequest())
-            .andExpect(status().reason("Error message"));
-    }
-
-@Test
-    public void testGetCandidateByHRId() throws Exception {
-        CandidateDTO candidateDTO = new CandidateDTO();
-        when(candidateService.getCandidateByHRId("HR01")).thenReturn(Arrays.asList(candidateDTO));
-
-        mockMvc.perform(get("/api/candidate/assignedHr/HR01"))
-            .andExpect(status().isOk());
-    }
-
-    @Test
-    public void testGetCandidateByStatus() throws Exception {
-        CandidateDTO candidateDTO = new CandidateDTO();
-        when(candidateService.getCandidateByStatus(OfferLetterStatus.GENERATED)).thenReturn(Arrays.asList(candidateDTO));
-
-        mockMvc.perform(get("/api/candidate/bystatus/GENERATED"))
-            .andExpect(status().isOk());
-    }
-
-    @Test
-    public void testGetCandidateByHRIdAndStatus() throws Exception {
-        CandidateDTO candidateDTO = new CandidateDTO();
-        when(candidateService.getCandidateByHRIdAndByStatus("HR01", OfferLetterStatus.GENERATED)).thenReturn(Arrays.asList(candidateDTO));
-
-        mockMvc.perform(get("/api/candidate/assignedHrAndStatus/HR01/GENERATED"))
-            .andExpect(status().isOk());
-    }
-
-    @Test
-    public void testGetCandidateUnderManager() throws Exception {
-        CandidateDTO candidateDTO = new CandidateDTO();
-        when(candidateService.getCandidateUnderManager("MGR01")).thenReturn(Arrays.asList(candidateDTO));
-
-        mockMvc.perform(get("/api/candidate/under-manager/MGR01"))
-            .andExpect(status().isOk());
-    }
-
-    @Test
-    public void testGetCandidateUnderManagerIdAndStatus() throws Exception {
-        CandidateDTO candidateDTO = new CandidateDTO();
-        when(candidateService.getCandidateUnderManagerIdAndByStatus("MGR01", OfferLetterStatus.GENERATED)).thenReturn(Arrays.asList(candidateDTO));
-
-        mockMvc.perform(get("/api/candidate/under-managerAndByStatus/MGR01/GENERATED"))
-            .andExpect(status().isOk());
-    }
-
-    @Test
-    public void testUpdateCandidateTemplate() throws Exception {
-        CandidateDTO candidateDTO = new CandidateDTO();
-        when(candidateService.updateTemplate(1L, "template1")).thenReturn(candidateDTO);
-
-        mockMvc.perform(put("/api/candidate/update-template/1/template1")
-            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk());
-    }
-
-    @Test
-    public void testExceptionWhenFetchingCandidateById() throws Exception {
-        when(candidateService.getCandidateById(99L)).thenThrow(new RuntimeException("Candidate not found"));
-
-        mockMvc.perform(get("/api/candidate/99"))
-            .andExpect(status().isBadRequest())
-            .andExpect(status().reason("Candidate not found"));
-    }
+@RestController
+@RequestMapping("api/email")
+@CrossOrigin
+public class EmailController {
+	
+	@Autowired(required=false)
+	private EmailService emailService;
+	
+	@GetMapping("/all")
+	public ResponseEntity<List<EmailDTO>> getAllEmails(){
+		try {
+			
+			List<EmailDTO> emailDTOList = emailService.getAllEmails();
+			
+			return new ResponseEntity<>(emailDTOList ,HttpStatus.OK);
+		} catch (Exception e) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
+		}
+	}
+	
+	@PostMapping("/create")
+	public ResponseEntity<CustomResponse<EmailDTO>> createEmail(@RequestBody EmailDTO emailDTO){
+		try {
+			CustomResponse<EmailDTO> response  = emailService.createEmail(emailDTO);
+			return new ResponseEntity<>(response ,HttpStatus.OK);
+		} catch (Exception e) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
+		}
+	}
 }
