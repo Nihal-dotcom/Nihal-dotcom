@@ -86,3 +86,40 @@ public class CandidateDTOTest {
         assertEquals(expected, candidateDto.toString());
     }
 }
+
+
+
+
+@Test
+void testSetters() {
+    candidateDto.setFirstName("sai");
+    candidateDto.setCandidateId(3333L);
+    candidateDto.setAssignedHRId("sda");
+    candidateDto.setEmail("panda@adp.com");
+    candidateDto.setGender("Female");
+    candidateDto.setOfferLetterStatus(OfferLetterStatus.APPROVED);
+    candidateDto.setJobId("sea");
+    candidateDto.setLastName("charan");
+    candidateDto.setMobile(9949591936L);
+    candidateDto.setPay(300000L);
+    candidateDto.setSelectedTemplateId("template123");
+    candidateDto.setGeneratedLetterDestination("destination");
+    candidateDto.setRemarksByHR("HR Remarks");
+    candidateDto.setRemarksByManager("Manager Remarks");
+
+    // Assertions for all fields:
+    assertEquals("sai", candidateDto.getFirstName());
+    assertEquals(3333L, candidateDto.getCandidateId());
+    assertEquals("sda", candidateDto.getAssignedHRId());
+    assertEquals("panda@adp.com", candidateDto.getEmail());
+    assertEquals("Female", candidateDto.getGender());
+    assertEquals(OfferLetterStatus.APPROVED, candidateDto.getOfferLetterStatus());
+    assertEquals("sea", candidateDto.getJobId());
+    assertEquals("charan", candidateDto.getLastName());
+    assertEquals(9949591936L, candidateDto.getMobile());
+    assertEquals(300000L, candidateDto.getPay());
+    assertEquals("template123", candidateDto.getSelectedTemplateId());
+    assertEquals("destination", candidateDto.getGeneratedLetterDestination());
+    assertEquals("HR Remarks", candidateDto.getRemarksByHR());
+    assertEquals("Manager Remarks", candidateDto.getRemarksByManager());
+}
