@@ -1,66 +1,11 @@
-package test.test.java.com.adp.eletter.repository;
+package com.adp.eletter.repository;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import com.adp.eletter.entitiy.Email;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import com.adp.eletter.EletterApplication;
-import com.adp.eletter.entity.HR;
-import com.adp.eletter.repository.HRRepository;
-
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = { EletterApplication.class })
-@AutoConfigureTestDatabase(replace = Replace.NONE)
-@DataJpaTest
-public class HRRepositoryIntegrationTest {
-
-    @Autowired
-    private TestEntityManager entityManager;
-
-    @Autowired
-    private HRRepository hrRepository;
-
-    @Test
-    public void whenFindById_thenReturnHR() {
-        HR hr = new HR(1L, "John", "Doe", "john.doe@company.com");
-        entityManager.persistAndFlush(hr);
-
-        HR found = hrRepository.findById(hr.getHrId()).orElse(null);
-        assertThat(found.getFirstName()).isEqualTo(hr.getFirstName());
-    }
-
-    @Test
-    public void whenInvalidId_thenReturnNull() {
-        HR fromDb = hrRepository.findById(132414441322L).orElse(null);
-        assertThat(fromDb).isNull();
-    }
-
-    @Test
-    public void givenSetOfHRs_whenFindAll_thenReturnAllHRs() {
-        HR john = new HR(1L, "John", "Doe", "john.doe@company.com");
-        HR jane = new HR(2L, "Jane", "Smith", "jane.smith@company.com");
-
-        List<HR> allHRsBefore = hrRepository.findAll();
-
-        entityManager.persist(john);
-        entityManager.persist(jane);
-        
-        entityManager.flush();
-
-        List<HR> allHRsAfter = hrRepository.findAll();
-
-        assertThat(allHRsAfter)
-        .hasSize(allHRsBefore.size() + 2);
-    }
+@Repository
+public interface EmailRepository extends JpaRepository<Email, Long>{
+	
 }
