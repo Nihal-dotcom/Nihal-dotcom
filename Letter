@@ -1,59 +1,111 @@
-package com.adp.eletter.service;
+package test.test.java.com.adp.eletter.service;
 
-import java.util.ArrayList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
+
+import java.util.Arrays;
 import java.util.List;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import com.adp.eletter.dto.CustomResponse;
 import com.adp.eletter.dto.EmailDTO;
 import com.adp.eletter.entitiy.Email;
 import com.adp.eletter.exception.EmailException;
 import com.adp.eletter.repository.EmailRepository;
-import com.adp.eletter.utility.ResponseUtil;
+import com.adp.eletter.service.EmailServiceImpl;
 
-@Service
-public class EmailServiceImpl implements EmailService{
+@ExtendWith(MockitoExtension.class)
+public class EmailServiceImplTest {
 
-	@Autowired
-	private EmailRepository emailRepository;
+    @Mock
+    private EmailRepository emailRepository;
 
-	@Autowired
-	private ModelMapper modelMapper;
+    @Mock
+    private ModelMapper modelMapper;
 
-	@Override
-	public List<EmailDTO> getAllEmails() throws EmailException {
-		try {
-			List<Email> emailEntityList = emailRepository.findAll();
-			if(emailEntityList.isEmpty()) {
-				throw new EmailException("No emails found");
-			}
-			List<EmailDTO> emailDTOList = new ArrayList<>();
+    @InjectMocks
+    private EmailServiceImpl emailService;
 
-			emailEntityList.forEach(email -> {
-				EmailDTO emailDTO = modelMapper.map(email, EmailDTO.class);
-				emailDTOList.add(emailDTO);
-			});
-			return emailDTOList;
-		} catch (Exception e) {
-			throw new EmailException(e.getMessage(),e);
-		}
-	}
+    @Test
+    public void testGetAllEmails() throws EmailException {
+        // mock data
+        Email email = new Email();
+        EmailDTO emailDTO = new EmailDTO();
+        when(emailRepository.findAll()).thenReturn(Arrays.asList(email));
+        when(modelMapper.map(email, EmailDTO.class)).thenReturn(emailDTO);
 
-	@Override
-	public CustomResponse<EmailDTO> createEmail(EmailDTO emailDTO) throws EmailException {
-		try {
-			Email email = modelMapper.map(emailDTO, Email.class);
-			emailRepository.save(email);
-			return ResponseUtil.createSuccessResponse(emailDTO, "Successfully sent mail");
-		} catch (Exception e) {
-			throw new EmailException(e.getMessage(),e);
-		}
-	}
+        List<EmailDTO> result = emailService.getAllEmails();
+
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0)).isEqualTo(emailDTO);
+    }
+
+    @Test
+    public void testCreateEmail() throws EmailException {
+        EmailDTO emailDTO = new EmailDTO();
+        Email email = new Email();
+        when(modelMapper.map(emailDTO, Email.class)).thenReturn(email);
+        when(emailRepository.save(email)).thenReturn(email);
+
+        CustomResponse<EmailDTO> response = emailService.createEmail(emailDTO);
+
+        assertThat(response.getMessage()).isEqualTo("Successfully sent mail");
+        assertThat(response.getData()).isEqualTo(emailDTO);
+    }
+
+    // Add more test methods for different scenarios like exception handling, etc.
 }
 
+@ExtendWith(MockitoExtension.class)
+public class EmailServiceImplTest {
+
+    // ... [previous mock definitions and setup]
+
+    @Test
+    public void testGetAllEmailsReturnsEmptyList() throws EmailException {
+        // Expect an exception since the service throws an exception when no emails are found
+        when(emailRepository.findAll()).thenReturn(Arrays.asList());
+
+        Exception exception = org.junit.jupiter.api.Assertions.assertThrows(EmailException.class, () -> {
+            emailService.getAllEmails();
+        });
+
+        assertThat(exception.getMessage()).isEqualTo("No emails found");
+    }
+
+    @Test
+    public void testGetAllEmailsThrowsException() throws EmailException {
+        // Simulate an exception when calling the repository
+        when(emailRepository.findAll()).thenThrow(new RuntimeException("DB Error"));
+
+        Exception exception = org.junit.jupiter.api.Assertions.assertThrows(EmailException.class, () -> {
+            emailService.getAllEmails();
+        });
+
+        assertThat(exception.getMessage()).isEqualTo("DB Error");
+    }
+
+    @Test
+    public void testCreateEmailThrowsException() throws EmailException {
+        EmailDTO emailDTO = new EmailDTO();
+        // Simulate an exception during email creation
+        when(modelMapper.map(emailDTO, Email.class)).thenThrow(new RuntimeException("Mapping Error"));
+
+        Exception exception = org.junit.jupiter.api.Assertions.assertThrows(EmailException.class, () -> {
+            emailService.createEmail(emailDTO);
+        });
+
+        assertThat(exception.getMessage()).isEqualTo("Mapping Error");
+    }
+
+    // ... [previous test methods]
+}
 
 
 
