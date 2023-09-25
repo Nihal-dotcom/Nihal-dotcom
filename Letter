@@ -1,125 +1,39 @@
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import com.adp.eletter.dto.CandidateDTO;
-import com.adp.eletter.entitiy.Candidate.OfferLetterStatus;
-
-public class CandidateDTOTest {
-
-    private CandidateDTO candidateDto;
-
-    @BeforeEach
-    void setUp() throws Exception {
-        candidateDto = CandidateDTO.builder()
-                .candidateId(12L)
-                .firstName("panda")
-                .lastName("barenya")
-                .email("panda@gmail.com")
-                .pay(1000000L)
-                .jobId("ADP01")
-                .gender("Male")
-                .mobile(9390999755L)
-                .assignedHRId("3gds")
-                .offerLetterStatus(OfferLetterStatus.GENERATED)
-                .selectedTemplateId("12gnfc")
-                .generatedLetterDestination("yes")
-                .build();
-    }
-
-    @AfterEach
-    void tearDown() throws Exception {
-        candidateDto = null;
-    }
-
-    @Test
-    void testAllArgConstructor() {
-        assertNotNull(candidateDto);
-    }
-
-    @Test
-    void testDefaultConstructor() {
-        CandidateDTO candidate = new CandidateDTO();
-        assertNotNull(candidate);
-    }
-
-    @Test
-    void testGetters() {
-        assertEquals("panda", candidateDto.getFirstName());
-        assertEquals(12, candidateDto.getCandidateId());
-        assertEquals("3gds", candidateDto.getAssignedHRId());
-        assertEquals("panda@gmail.com", candidateDto.getEmail());
-        assertEquals("Male", candidateDto.getGender());
-        assertEquals("ADP01", candidateDto.getJobId());
-        assertEquals("barenya", candidateDto.getLastName());
-        assertEquals(9390999755L, candidateDto.getMobile());
-        assertEquals(1000000L, candidateDto.getPay());
-        assertEquals(OfferLetterStatus.GENERATED, candidateDto.getOfferLetterStatus());
-        //... Add other getter tests as needed.
-    }
-
-    @Test
-    void testSetters() {
-        candidateDto.setFirstName("sai");
-        candidateDto.setCandidateId(3333L);
-        candidateDto.setAssignedHRId("sda");
-        candidateDto.setEmail("panda@adp.com");
-        candidateDto.setGender("Female");
-        candidateDto.setOfferLetterStatus(OfferLetterStatus.APPROVED);
-        candidateDto.setJobId("sea");
-        candidateDto.setLastName("charan");
-        candidateDto.setMobile(9949591936L);
-        candidateDto.setPay(300000L);
-        //... Add other setter tests as needed.
-
-        assertEquals("sai", candidateDto.getFirstName());
-        assertEquals(3333, candidateDto.getCandidateId());
-        //... Continue your assertions for the other fields.
-    }
-
-    @Test
-    void testToString() {
-        String expected = "CandidateDTO(candidateId=12, firstName=panda, lastName=barenya, ... )"; // Update with the correct format
-        assertEquals(expected, candidateDto.toString());
-    }
-}
-
-
-
-
 @Test
-void testSetters() {
-    candidateDto.setFirstName("sai");
-    candidateDto.setCandidateId(3333L);
-    candidateDto.setAssignedHRId("sda");
-    candidateDto.setEmail("panda@adp.com");
-    candidateDto.setGender("Female");
-    candidateDto.setOfferLetterStatus(OfferLetterStatus.APPROVED);
-    candidateDto.setJobId("sea");
-    candidateDto.setLastName("charan");
-    candidateDto.setMobile(9949591936L);
-    candidateDto.setPay(300000L);
-    candidateDto.setSelectedTemplateId("template123");
-    candidateDto.setGeneratedLetterDestination("destination");
-    candidateDto.setRemarksByHR("HR Remarks");
-    candidateDto.setRemarksByManager("Manager Remarks");
+void testToString() {
+    // Setting up the object
+    CandidateDTO candidate = CandidateDTO.builder()
+        .candidateId(12L)
+        .firstName("panda")
+        .lastName("barenya")
+        .email("panda@gmail.com")
+        .pay(1000000L)
+        .jobId("ADP01")
+        .gender("Male")
+        .mobile(9390999755L)
+        .assignedHRId("3gds")
+        .offerLetterStatus(OfferLetterStatus.GENERATED)
+        .selectedTemplateId("12gnfc")
+        .generatedLetterDestination("yes")
+        .remarksByHR("Remarks by HR")
+        .remarksByManager("Remarks by Manager")
+        .build();
 
-    // Assertions for all fields:
-    assertEquals("sai", candidateDto.getFirstName());
-    assertEquals(3333L, candidateDto.getCandidateId());
-    assertEquals("sda", candidateDto.getAssignedHRId());
-    assertEquals("panda@adp.com", candidateDto.getEmail());
-    assertEquals("Female", candidateDto.getGender());
-    assertEquals(OfferLetterStatus.APPROVED, candidateDto.getOfferLetterStatus());
-    assertEquals("sea", candidateDto.getJobId());
-    assertEquals("charan", candidateDto.getLastName());
-    assertEquals(9949591936L, candidateDto.getMobile());
-    assertEquals(300000L, candidateDto.getPay());
-    assertEquals("template123", candidateDto.getSelectedTemplateId());
-    assertEquals("destination", candidateDto.getGeneratedLetterDestination());
-    assertEquals("HR Remarks", candidateDto.getRemarksByHR());
-    assertEquals("Manager Remarks", candidateDto.getRemarksByManager());
+    // Generating the expected string
+    String expected = "CandidateDTO(candidateId=12, " +
+        "firstName=panda, " +
+        "lastName=barenya, " +
+        "email=panda@gmail.com, " +
+        "pay=1000000, " +
+        "jobId=ADP01, " +
+        "gender=Male, " +
+        "mobile=9390999755, " +
+        "assignedHRId=3gds, " +
+        "offerLetterStatus=GENERATED, " +
+        "selectedTemplateId=12gnfc, " +
+        "generatedLetterDestination=yes, " +
+        "remarksByHR=Remarks by HR, " +
+        "remarksByManager=Remarks by Manager)";
+
+    // Asserting
+    assertEquals(expected, candidate.toString());
 }
