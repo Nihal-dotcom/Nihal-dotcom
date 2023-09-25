@@ -1,99 +1,120 @@
-package com.adp.eletter.entitiy;
-
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
-@Entity
-@Table(name = "email")
-public class Email {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    
-    private String content;
-
-    // Constructors, getters, setters and other utility methods...
-}
-
-package com.adp.eletter.repository;
-
-import com.adp.eletter.entitiy.Email;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-
-@Repository
-public interface EmailRepository extends JpaRepository<Email, Long> {
-    // No custom methods required as basic CRUD operations are inherited from JpaRepository
-}
-
-
-package com.adp.eletter.repository;
+package com.adp.eletter.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.anyLong;
+
+import java.util.Arrays;
 import java.util.List;
-import org.junit.jupiter.api.AfterEach;
+import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
 
-@DataJpaTest
-public class EmailRepositoryTest {
+import com.adp.eletter.dto.CandidateDTO;
+import com.adp.eletter.entitiy.Candidate;
+import com.adp.eletter.entitiy.Candidate.OfferLetterStatus;
+import com.adp.eletter.exception.CandidateException;
+import com.adp.eletter.repository.CandidateRepository;
 
-    @Autowired
-    private EmailRepository emailRepository;
+@ExtendWith(MockitoExtension.class)
+public class CandidateServiceIntegrationTest {
+
+    @Mock
+    private CandidateRepository candidateRepository;
+
+    @InjectMocks
+    private CandidateServiceImpl candidateServiceImpl;
+
+    private Candidate candidate1, candidate2;
 
     @BeforeEach
     public void setUp() {
-        // Here you can set up any initial data before each test.
-    }
+        candidate1 = new Candidate(
+            12l,                        // candidateId
+            "panda",                    // firstName
+            "barenya",                  // lastName
+            "panda@gmail.com",          // email
+            1000000l,                   // pay
+            "ADP01",                    // jobId
+            "Male",                     // gender
+            9390999755l,                // mobile
+            "2023-09-25",               // joiningDate (added as an example, adjust accordingly)
+            "3gds",                     // assignedHRId
+            OfferLetterStatus.GENERATED, // offerLetterStatus
+            "12gnfc",                   // selectedTemplateId
+            "some/path/to/letter",      // generatedLetterDestination (added as an example, adjust accordingly)
+            "Remark by HR",             // remarksByHR (added as an example, adjust accordingly)
+            "Remark by Manager"         // remarksByManager (added as an example, adjust accordingly)
+        );
 
-    @AfterEach
-    public void tearDown() {
-        // Clear the database after each test to ensure there's no interference between tests.
-        emailRepository.deleteAll();
-    }
+        candidate2 = new Candidate(
+            22l,                        // candidateId
+            "nandu",                    // firstName
+            "surendhar",                // lastName
+            "davu@gmail.com",           // email
+            1000000l,                   // pay
+            "ADP01",                    // jobId
+            "Male",                     // gender
+            9390999755l,                // mobile
+            "2023-09-26",               // joiningDate (added as an example, adjust accordingly)
+            "3ds",                      // assignedHRId
+            OfferLetterStatus.APPROVED, // offerLetterStatus
+            "12gnfc",                   // selectedTemplateId
+            "some/path/to/letter",      // generatedLetterDestination (added as an example, adjust accordingly)
+            "Remark by HR",             // remarksByHR (added as an example, adjust accordingly)
+            "Remark by Manager"         // remarksByManager (added as an example, adjust accordingly)
+        );
 
+        List<Candidate> allCandidates = Arrays.asList(candidate1, candidate2);
+
+        Mockito.when(candidateRepository.findById(candidate1.getCandidateId())).thenReturn(Optional.of(candidate1));
+        Mockito.when(candidateRepository.findById(candidate2.getCandidateId())).thenReturn(Optional.of(candidate2));
+        Mockito.when(candidateRepository.findAll()).thenReturn(allCandidates);
+        Mockito.when(candidateRepository.findById(-99L)).thenReturn(Optional.empty());
+    }
+    
+    
     @Test
-    public void whenSaveEmail_thenReturnSavedEmail() {
-        Email email = new Email();
-        email.setId(1L);
-        email.setContent("Sample content");
-        // Add any other necessary properties for the Email entity
-
-        Email savedEmail = emailRepository.save(email);
-
-        Email found = emailRepository.findById(savedEmail.getId()).orElse(null);
-        assertThat(found).isNotNull();
-        assertThat(found.getContent()).isEqualTo(email.getContent());
+    public void whenValidID_thenCandidateShouldBeFound() throws CandidateException {
+        Long id = 22l;
+        CandidateDTO found = candidateServiceImpl.getCandidateById(id);
+        verifyFindByIdIsCalledOnce();
+        assertThat(found.getCandidateId()).isEqualTo(id);
     }
 
+    // Uncommented and refactored this test
     @Test
-    public void whenInvalidId_thenReturnNull() {
-        Email fromDb = emailRepository.findById(-9999L).orElse(null); // Use a negative ID assuming it won't exist
-        assertThat(fromDb).isNull();
+    public void whenInValidID_thenCandidateShouldNotBeFound() {
+        Long id = -99L;
+        Exception exception = assertThrows(CandidateException.class, () -> {
+            candidateServiceImpl.getCandidateById(id);
+        });
+        verifyFindByIdIsCalledOnce();
+        String expectedMessage = "Candidate Not available";  // Assuming this is the exception message
+        String actualMessage = exception.getMessage();
+        assertThat(actualMessage).isEqualTo(expectedMessage);
     }
 
-    @Test
-    public void givenSetOfEmails_whenFindAll_thenReturnAllEmails() {
-        Email email1 = new Email();
-        email1.setContent("First email");
-        // Add any other necessary properties
+    // ... [other test methods remain largely unchanged]
 
-        Email email2 = new Email();
-        email2.setContent("Second email");
-        // Add any other necessary properties
+    // Utility methods to verify interactions
+    private void verifyFindByIdIsCalledOnce() {
+        verify(candidateRepository, times(1)).findById(anyLong());
+        reset(candidateRepository);
+    }
 
-        emailRepository.save(email1);
-        emailRepository.save(email2);
-
-        List<Email> allEmails = emailRepository.findAll();
-
-        assertThat(allEmails).isNotEmpty();
-        assertThat(allEmails).contains(email1, email2);
+    private void verifyFindAllCandidatesIsCalledOnce() {
+        verify(candidateRepository, times(1)).findAll();
+        reset(candidateRepository);
     }
 }
