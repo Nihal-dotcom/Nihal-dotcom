@@ -1,9 +1,14 @@
-npm ERR! chromedriver@119.0.0 install: `node install.js`
-npm ERR! Exit status 1
-npm ERR!
-npm ERR! Failed at the chromedriver@119.0.0 install script.
-npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
+PS C:\Users\sinhanih\Desktop\qa_automation> node install.js
+internal/modules/cjs/loader.js:883
+  throw err;
+  ^
 
-npm ERR! A complete log of this run can be found in:
-npm ERR!     C:\Users\sinhanih\AppData\Roaming\npm-cache\_logs\2023-11-07T09_44_41_887Z-debug.log
-PS C:\Users\sinhanih\Desktop\qa_automation\SBS_Automation>
+Error: Cannot find module 'C:\Users\sinhanih\Desktop\qa_automation\install.js'
+?[90m    at Function.Module._resolveFilename (internal/modules/cjs/loader.js:880:15)?[39m
+?[90m    at Function.Module._load (internal/modules/cjs/loader.js:725:27)?[39m
+?[90m    at Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)?[39m
+?[90m    at internal/main/run_main_module.js:17:47?[39m {
+  code: ?[32m'MODULE_NOT_FOUND'?[39m,
+  requireStack: []
+}
+PS C:\Users\sinhanih\Desktop\qa_automation>
