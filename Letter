@@ -1,14 +1,5 @@
-PS C:\Users\sinhanih\Desktop\qa_automation> node install.js
-internal/modules/cjs/loader.js:883
-  throw err;
-  ^
+ERROR: npm v10.2.3 is known not to run on Node.js v14.15.4.  This version of npm supports the following node versions: `^18.17.0 || >=20.5.0`. You can find the latest version at https://nodejs.org/.
 
-Error: Cannot find module 'C:\Users\sinhanih\Desktop\qa_automation\install.js'
-?[90m    at Function.Module._resolveFilename (internal/modules/cjs/loader.js:880:15)?[39m
-?[90m    at Function.Module._load (internal/modules/cjs/loader.js:725:27)?[39m
-?[90m    at Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)?[39m
-?[90m    at internal/main/run_main_module.js:17:47?[39m {
-  code: ?[32m'MODULE_NOT_FOUND'?[39m,
-  requireStack: []
-}
-PS C:\Users\sinhanih\Desktop\qa_automation>
+ERROR:
+C:\Users\sinhanih\AppData\Roaming\npm\node_modules\npm\node_modules\@npmcli\agent\lib\agents.js:105
+    options.lookup ??= this.#options.lookup
