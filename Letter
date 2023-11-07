@@ -1,1 +1,9 @@
-I went to Kalsubai Peak on 31st December 2022. It was a great trip. We trekked to the top and camped overnight. We saw a beautiful sunset and the first sunrise of 2023.
+npm ERR! chromedriver@119.0.0 install: `node install.js`
+npm ERR! Exit status 1
+npm ERR!
+npm ERR! Failed at the chromedriver@119.0.0 install script.
+npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
+
+npm ERR! A complete log of this run can be found in:
+npm ERR!     C:\Users\sinhanih\AppData\Roaming\npm-cache\_logs\2023-11-07T09_44_41_887Z-debug.log
+PS C:\Users\sinhanih\Desktop\qa_automation\SBS_Automation>
