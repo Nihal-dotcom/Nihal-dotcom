@@ -2,19 +2,16 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.WaitHelpers;
+using System;
+using System.Threading;
 
 class Run
 {
-
     static void Main()
     {
-
         IWebDriver driver = new ChromeDriver();
-
         string Url = "https://runpayroll-qafit.nj.adp.com/";
-
         driver.Navigate().GoToUrl(Url);
-
 
         WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
 
@@ -25,7 +22,6 @@ class Run
 
             // Wait for the URL to contain the expected value
             wait.Until(ExpectedConditions.UrlContains("https://online-fit.nj.adp.com/"));
-
 
             IWebElement usernameInput = driver.FindElement(By.Id("login-form_username"));
             usernameInput.SendKeys("Firmtest1@kumar");
@@ -38,8 +34,25 @@ class Run
             IWebElement signin = driver.FindElement(By.Id("signBtn"));
             signin.Click();
             Thread.Sleep(1500);
-        }
 
+            // Wait for successful login (you can adjust the conditions as needed)
+            wait.Until(ExpectedConditions.UrlContains("https://dashboard.yourapp.com"));
+
+            Console.WriteLine("Login successful!");
+
+            // Search for items after successful login
+            IWebElement searchBox = wait.Until(ExpectedConditions.ElementIsVisible(By.Id("search-box")));
+            searchBox.SendKeys("Your search query");
+
+            // You can perform additional actions after entering the search query, such as clicking a search button
+            // IWebElement searchButton = wait.Until(ExpectedConditions.ElementToBeClickable(By.Id("search-button")));
+            // searchButton.Click();
+
+            // Wait for the search results page to load (adjust wait time as needed)
+            wait.Until(driver => ((IJavaScriptExecutor)driver).ExecuteScript("return document.readyState").Equals("complete"));
+
+            // You can add more assertions or actions based on the search results if needed
+        }
         catch (Exception e)
         {
             Console.WriteLine(e.Message);
@@ -50,16 +63,3 @@ class Run
         }
     }
 }
-
-
-
-
-
-            
-    
-            
-        
-
-
-                
-
