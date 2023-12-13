@@ -13,7 +13,7 @@ class Run
         string Url = "https://runpayroll-qafit.nj.adp.com/";
         driver.Navigate().GoToUrl(Url);
 
-        WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+        WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(30));
 
         try
         {
@@ -36,17 +36,16 @@ class Run
             Thread.Sleep(1500);
 
             // Wait for successful login (you can adjust the conditions as needed)
-            wait.Until(ExpectedConditions.UrlContains("https://dashboard.yourapp.com"));
+            wait.Until(ExpectedConditions.UrlContains("https://runpayrollmain2-qafit.nj.adp.com/"));
 
             Console.WriteLine("Login successful!");
 
             // Search for items after successful login
-            IWebElement searchBox = wait.Until(ExpectedConditions.ElementIsVisible(By.Id("search-box")));
-            searchBox.SendKeys("Your search query");
+            IWebElement searchBox = wait.Until(ExpectedConditions.ElementIsVisible(By.Name("SSPage$txtSearch$ctl00")));
+            searchBox.FindElement(By.Id("SSPage_txtSearch")).SendKeys("35010457");
+            IWebElement searchButton = wait.Until(ExpectedConditions.ElementToBeClickable(By.Id("SSPage_Tablecell17")));
+            searchButton.Click();
 
-            // You can perform additional actions after entering the search query, such as clicking a search button
-            // IWebElement searchButton = wait.Until(ExpectedConditions.ElementToBeClickable(By.Id("search-button")));
-            // searchButton.Click();
 
             // Wait for the search results page to load (adjust wait time as needed)
             wait.Until(driver => ((IJavaScriptExecutor)driver).ExecuteScript("return document.readyState").Equals("complete"));
