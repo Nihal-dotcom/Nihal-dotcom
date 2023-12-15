@@ -14,7 +14,7 @@ class Run
         string Url = "https://runpayroll-qafit.nj.adp.com/";
         driver.Navigate().GoToUrl(Url);
 
-        WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(30));
+        WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(25));
 
         try
         {
@@ -41,19 +41,39 @@ class Run
 
             Console.WriteLine("Login successful!");
 
-            // Search for items after successful login
-            IWebElement searchBox = wait.Until(ExpectedConditions.ElementIsVisible(By.Name("SSPage$txtSearch$ctl00")));
-            searchBox.SendKeys("35010457");
+            Thread.Sleep(500);
 
-            // You can add more assertions or actions based on the search results if needed
+            // Search for items after successful login
+
+            wait.Until(driver => ((IJavaScriptExecutor)driver).ExecuteScript("return document.readyState").Equals("complete"));
+
+            wait.Until(ExpectedConditions.UrlContains("https://runpayrollmain2-qafit.nj.adp.com/"));
+
+            IWebElement searchbar = wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//*[@id=\"SSPage_txtSearch\"]")));
+            Thread.Sleep(1000);
+            searchbar.SendKeys("payroll");
+            
+
+            //IWebElement logo = wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//*[@id=\"xfmOtherMyProfile\"]/a/span[1]")));
+           // logo.Click();
+            
+
+
+           // IWebElement Logout = wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//*[@id=\"profileLogout\"]/a/span[1]")));
+           // Logout.Click();
+           // Thread.Sleep(1000);
+            
         }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
-        }
-        finally
-        {
+
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            finally
+            {
             driver.Quit();
         }
+        
     }
-}
+        
+ }
