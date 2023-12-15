@@ -3,77 +3,74 @@ using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.WaitHelpers;
 using System;
-using System.Threading;
 
 class Run
 {
     static void Main()
     {
         IWebDriver driver = new ChromeDriver();
-        driver.Manage().Window.Maximize(); // Maximize the browser window
-        string Url = "https://runpayroll-qafit.nj.adp.com/";
-        driver.Navigate().GoToUrl(Url);
-
         WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(25));
 
         try
         {
+            // Navigate to the URL
+            driver.Manage().Window.Maximize(); // Maximize the browser window
+            string url = "https://runpayroll-qafit.nj.adp.com/";
+            driver.Navigate().GoToUrl(url);
+
             // Wait for the page to load (adjust wait time as needed)
             wait.Until(driver => ((IJavaScriptExecutor)driver).ExecuteScript("return document.readyState").Equals("complete"));
 
             // Wait for the URL to contain the expected value
             wait.Until(ExpectedConditions.UrlContains("https://online-fit.nj.adp.com/"));
 
-            IWebElement usernameInput = driver.FindElement(By.Id("login-form_username"));
-            usernameInput.SendKeys("Firmtest1@kumar");
-            IWebElement nxt = driver.FindElement(By.Id("verifUseridBtn"));
-            nxt.Click();
-            Thread.Sleep(1000);
+            // Perform login
+            Login(driver, wait);
 
-            IWebElement passwordInput = driver.FindElement(By.Id("login-form_password"));
-            passwordInput.SendKeys("Nihal123#");
-            IWebElement signin = driver.FindElement(By.Id("signBtn"));
-            signin.Click();
-            Thread.Sleep(1500);
+            // Additional actions after successful login
+            SearchForItems(driver, wait);
 
-            // Wait for successful login (you can adjust the conditions as needed)
-            wait.Until(ExpectedConditions.UrlContains("https://runpayrollmain2-qafit.nj.adp.com/"));
-
-            Console.WriteLine("Login successful!");
-
-            Thread.Sleep(500);
-
-            // Search for items after successful login
-
-            wait.Until(driver => ((IJavaScriptExecutor)driver).ExecuteScript("return document.readyState").Equals("complete"));
-
-            wait.Until(ExpectedConditions.UrlContains("https://runpayrollmain2-qafit.nj.adp.com/"));
-
-            IWebElement searchbar = wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//*[@id=\"SSPage_txtSearch\"]")));
-            Thread.Sleep(1000);
-            searchbar.SendKeys("payroll");
-            
-
-            //IWebElement logo = wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//*[@id=\"xfmOtherMyProfile\"]/a/span[1]")));
-           // logo.Click();
-            
-
-
-           // IWebElement Logout = wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//*[@id=\"profileLogout\"]/a/span[1]")));
-           // Logout.Click();
-           // Thread.Sleep(1000);
-            
         }
-
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
-            finally
-            {
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+        }
+        finally
+        {
             driver.Quit();
         }
-        
     }
-        
- }
+
+    static void Login(IWebDriver driver, WebDriverWait wait)
+    {
+        // Find username input
+        IWebElement usernameInput = driver.FindElement(By.Id("login-form_username"));
+        usernameInput.SendKeys("Firmtest1@kumar");
+
+        // Click next button
+        IWebElement nextButton = driver.FindElement(By.Id("verifUseridBtn"));
+        nextButton.Click();
+        wait.Until(ExpectedConditions.ElementIsVisible(By.Id("login-form_password")));
+
+        // Find password input
+        IWebElement passwordInput = driver.FindElement(By.Id("login-form_password"));
+        passwordInput.SendKeys("Nihal123#");
+
+        // Click sign-in button
+        IWebElement signInButton = driver.FindElement(By.Id("signBtn"));
+        signInButton.Click();
+        wait.Until(ExpectedConditions.UrlContains("https://runpayrollmain2-qafit.nj.adp.com/"));
+    }
+
+    static void SearchForItems(IWebDriver driver, WebDriverWait wait)
+    {
+        wait.Until(driver => ((IJavaScriptExecutor)driver).ExecuteScript("return document.readyState").Equals("complete"));
+        wait.Until(ExpectedConditions.UrlContains("https://runpayrollmain2-qafit.nj.adp.com/"));
+
+        // Your existing code for searching items
+        IWebElement searchbar = wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//*[@id=\"SSPage_txtSearch\"]")));
+        searchbar.SendKeys("payroll");
+
+        // Add additional actions as needed
+    }
+}
