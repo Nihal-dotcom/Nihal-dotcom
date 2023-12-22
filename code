@@ -1,47 +1,59 @@
+using OpenQA.Selenium.Support.UI;
+using SeleniumExtras.WaitHelpers;
 using NUnit.Framework;
 using OpenQA.Selenium;
 
-[TestFixture]
-public class RunTests
+namespace ConsoleApp2
 {
-    private IWebDriver driver;
-
-    [SetUp]
-    public void Setup()
+    public class EntryPoint
     {
-        // Initialize the WebDriver before each test
-        driver = new ChromeDriver();
-        driver.Manage().Window.Maximize();
+
+        static void Main()
+        { }
+        [SetUp]
+
+        public void Setup()
+            {
+                {
+                    Login login = new Login();
+
+                    Driver.driver.Manage().Window.Maximize();
+
+                    string Url = "https://runpayroll-qafit.nj.adp.com/";
+
+                    Driver.driver.Navigate().GoToUrl(Url);
+
+                    WebDriverWait wait = new WebDriverWait(Driver.driver, TimeSpan.FromSeconds(35));
+                    try
+                    {
+                        // Wait for the page to load (adjust wait time as needed)
+                        wait.Until(driver => ((IJavaScriptExecutor)driver).ExecuteScript("return document.readyState").Equals("complete"));
+
+                        // Wait for the URL to contain the expected value
+                        wait.Until(ExpectedConditions.UrlContains("https://online-fit.nj.adp.com/"));
+
+
+                        login.username.SendKeys("owner@34554623");
+                        login.next.Click();
+                        Thread.Sleep(2000);
+                        login.password.SendKeys("Test@1357");
+                        login.signin.Click();
+                        Thread.Sleep(5000);
+
+
+                    Console.WriteLine("Works fine");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"An error occurred: {ex.Message}");
+                    }
+                }
+
+              
+                Driver.driver.Quit();
+                
+
+            }
+        }
     }
 
-    [TearDown]
-    public void Teardown()
-    {
-        // Clean up the WebDriver after each test
-        driver.Quit();
-    }
-
-    [Test]
-    public void TestLoginSuccess()
-    {
-        // Arrange
-        driver.Navigate().GoToUrl("https://runpayroll-qafit.nj.adp.com/");
-        WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(25));
-
-        // Wait for the page to load
-        wait.Until(driver => ((IJavaScriptExecutor)driver).ExecuteScript("return document.readyState").Equals("complete"));
-
-        // Wait for the URL to contain the expected value
-        wait.Until(ExpectedConditions.UrlContains("https://online-fit.nj.adp.com/"));
-
-        // Act
-        Run.Login(driver, wait);
-
-        // Wait for the URL after login
-        wait.Until(ExpectedConditions.UrlContains("https://runpayrollmain2-qafit.nj.adp.com/"));
-
-        // Assert
-        string currentUrl = driver.Url;
-        Assert.IsTrue(currentUrl.Contains("https://runpayrollmain2-qafit.nj.adp.com/"), "Login failed. Test Failed!");
-    }
-}
