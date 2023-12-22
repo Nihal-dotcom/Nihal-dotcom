@@ -1,82 +1,83 @@
-using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.WaitHelpers;
 using System;
 
-[TestFixture]
-public class RunTests
+public class Run 
 {
-    private IWebDriver driver;
-    private WebDriverWait wait;
-
-    [SetUp]
-    public void Setup()
+    public static void Main()
     {
-        driver = new ChromeDriver();
-        wait = new WebDriverWait(driver, TimeSpan.FromSeconds(25));
-        driver.Manage().Window.Maximize();
+        IWebDriver driver = new ChromeDriver();
+        WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(25));
+
+        try
+        {
+          
+            driver.Manage().Window.Maximize(); 
+            string url = "https://runpayroll-qafit.nj.adp.com/";
+            driver.Navigate().GoToUrl(url);
+
+            // Wait for the page to load (adjust wait time as needed)
+            wait.Until(driver => ((IJavaScriptExecutor)driver).ExecuteScript("return document.readyState").Equals("complete"));
+
+            // Wait for the URL to contain the expected value
+            wait.Until(ExpectedConditions.UrlContains("https://online-fit.nj.adp.com/"));
+
+           
+            Login(driver, wait);
+
+            string currentUrl = driver.Url;
+
+            if (currentUrl.Contains("https://runpayrollmain2-qafit.nj.adp.com/"))
+            {
+
+                Console.WriteLine("Login successful. Test Passed!");
+            }
+            else
+            {
+                Console.WriteLine("Search failed. Test Failed!");
+            }
+
+
+
+
+
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+        }
+        finally
+        {
+            driver.Quit();
+        }
     }
 
-    [TearDown]
-    public void TearDown()
+    static void Login(IWebDriver driver, WebDriverWait wait)
     {
-        driver.Quit();
-    }
-
-    [Test]
-    public void TestLoginSuccess()
-    {
-        driver.Navigate().GoToUrl("https://runpayroll-qafit.nj.adp.com/");
-
-        // Wait for the page to load
-        wait.Until(driver => ((IJavaScriptExecutor)driver).ExecuteScript("return document.readyState").Equals("complete"));
-
-        // Wait for the URL to contain the expected value
-        wait.Until(ExpectedConditions.UrlContains("https://online-fit.nj.adp.com/"));
-
-        Login(driver, wait);
-
-        string currentUrl = driver.Url;
-
-        Assert.IsTrue(currentUrl.Contains("https://runpayrollmain2-qafit.nj.adp.com/"), "Login successful. Test Passed!");
-    }
-
-    [Test]
-    public void TestLoginFailure()
-    {
-        driver.Navigate().GoToUrl("https://runpayroll-qafit.nj.adp.com/");
-
-        // Wait for the page to load
-        wait.Until(driver => ((IJavaScriptExecutor)driver).ExecuteScript("return document.readyState").Equals("complete"));
-
-        // Wait for the URL to contain the expected value
-        wait.Until(ExpectedConditions.UrlContains("https://online-fit.nj.adp.com/"));
-
-        // Provide incorrect login credentials
-        Login(driver, wait, "invalid_username", "invalid_password");
-
-        string currentUrl = driver.Url;
-
-        Assert.IsFalse(currentUrl.Contains("https://runpayrollmain2-qafit.nj.adp.com/"), "Login failed. Test Passed!");
-    }
-
-    // Updated Login method to support providing credentials for testing
-    static void Login(IWebDriver driver, WebDriverWait wait, string username = "owner@34554623", string password = "Test@1357")
-    {
+        
         IWebElement usernameInput = driver.FindElement(By.Id("login-form_username"));
-        usernameInput.SendKeys(username);
+        usernameInput.SendKeys("owner@34554623");
 
+       
         IWebElement nextButton = driver.FindElement(By.Id("verifUseridBtn"));
         nextButton.Click();
         wait.Until(ExpectedConditions.ElementIsVisible(By.Id("login-form_password")));
 
+        
         IWebElement passwordInput = driver.FindElement(By.Id("login-form_password"));
-        passwordInput.SendKeys(password);
+        passwordInput.SendKeys("Test@1357");
 
+        
         IWebElement signInButton = driver.FindElement(By.Id("signBtn"));
         signInButton.Click();
         wait.Until(ExpectedConditions.ElementIsVisible(By.Id("SSPage_CwcGridClientList_Detail_ctl00")));
+
+
+       
     }
-}
+
+ }
+
+Can you add nunit test so I can test this code
