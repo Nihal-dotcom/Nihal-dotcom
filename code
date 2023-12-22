@@ -1,0 +1,81 @@
+using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Support.UI;
+using SeleniumExtras.WaitHelpers;
+using System;
+
+public class Run 
+{
+    public static void Main()
+    {
+        IWebDriver driver = new ChromeDriver();
+        WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(25));
+
+        try
+        {
+          
+            driver.Manage().Window.Maximize(); 
+            string url = "https://runpayroll-qafit.nj.adp.com/";
+            driver.Navigate().GoToUrl(url);
+
+            // Wait for the page to load (adjust wait time as needed)
+            wait.Until(driver => ((IJavaScriptExecutor)driver).ExecuteScript("return document.readyState").Equals("complete"));
+
+            // Wait for the URL to contain the expected value
+            wait.Until(ExpectedConditions.UrlContains("https://online-fit.nj.adp.com/"));
+
+           
+            Login(driver, wait);
+
+            string currentUrl = driver.Url;
+
+            if (currentUrl.Contains("https://runpayrollmain2-qafit.nj.adp.com/"))
+            {
+
+                Console.WriteLine("Login successful. Test Passed!");
+            }
+            else
+            {
+                Console.WriteLine("Search failed. Test Failed!");
+            }
+
+
+
+
+
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+        }
+        finally
+        {
+            driver.Quit();
+        }
+    }
+
+    static void Login(IWebDriver driver, WebDriverWait wait)
+    {
+        
+        IWebElement usernameInput = driver.FindElement(By.Id("login-form_username"));
+        usernameInput.SendKeys("owner@34554623");
+
+       
+        IWebElement nextButton = driver.FindElement(By.Id("verifUseridBtn"));
+        nextButton.Click();
+        wait.Until(ExpectedConditions.ElementIsVisible(By.Id("login-form_password")));
+
+        
+        IWebElement passwordInput = driver.FindElement(By.Id("login-form_password"));
+        passwordInput.SendKeys("Test@1357");
+
+        
+        IWebElement signInButton = driver.FindElement(By.Id("signBtn"));
+        signInButton.Click();
+        wait.Until(ExpectedConditions.ElementIsVisible(By.Id("SSPage_CwcGridClientList_Detail_ctl00")));
+
+
+       
+    }
+
+ }
