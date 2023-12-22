@@ -1,76 +1,505 @@
-using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
-using OpenQA.Selenium.Support.UI;
-using SeleniumExtras.WaitHelpers;
-using System;
+const { By } = require('selenium-webdriver');
+const BasePage = require('../../common/base-page');
 
-class Run
-{
-    static void Main()
-    {
-        IWebDriver driver = new ChromeDriver();
-        WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(25));
+const ACT_NOW_BUTTON = By.xpath("//sdf-button[text()='Act now']");
+const IMPORTANT_NOTIFICATION = By.css(".dlg-CombinedMessage.dlg-close-action");
+const HOME_PAGE = By.xpath("//p[contains(text(), 'Good')]");
+const ACT_NOW_BUTTON_BANNER_TEXT = By.xpath("//sdf-alert[@role='alert']//span");
+const PAGE_MAIN_TITLE = By.xpath("//div[text()='Get ready for year-end']");
+const SEND_NUDGE_BUTTON = By.xpath("//sdf-button[text()='Send a nudge']");
+const TURN_OFF_LINK = By.partialLinkText("Turn Off");
+const TURN_OFF_LINK_SELECT = By.xpath("//a[contains(text(), 'paperless')]");
+const INPUT_FIELD = By.xpath("//div/textarea");
+const SUBMIT_BUTTON = By.xpath("//button[text()='Submit']");
+const OK_BUTTON = By.xpath("//button[text()='OK']");
+const LEARN_MORE_BUTTON = By.xpath("//sdf-button[text()='Learn more']");
+const SIGN_ME_UP_BUTTON = By.xpath("//button[text()='Sign me up']");
+const CLOSE_BUTTON = By.xpath("//button[text()='Close']");
+const ENROLLED_PAPERLESS_TEXT = By.xpath("//div[contains(text(),'in paperless W-2s')]");
+const PAY_YEAR_END_BONUSES = By.xpath("//div[text()='Pay year-end bonuses']");
+const LEARN_MORE_PYEB = By.xpath("//sdf-button[text()='Learn more about paying bonuses']");
+const HELP_TEXT = By.xpath("//span[text()='Help']");
+const PAYROLL_DETAILS_REPORT = By.xpath("//div[@data-test-id='navrow-year-end-1-bonus-payroll-label']");
+const PAYROLL_DETAILS_SCREEN = By.xpath("//div[text()='Payroll Detail']");
+const BACK_BUTTON = By.xpath("//span[@data-test-id='modal-header-icon']");
+const PTO_BACK_BUTTON = By.xpath("//span[@class='sbsicons-arrow-left']");
+const REGULAR_PAYROLL_REPORT = By.xpath("//div[@data-test-id='navrow-year-end-2-bonus-payroll-label']");
+const RFB_RUN_PR = By.xpath("//div[@data-test-id='navrow-ye-fringebenefits-link-1-label']");
+const START_PAYROLL_SCREEN = By.xpath("//span[text()='Start payroll']")
+const PAYROLL_SCREEN_CANCEL_BUTTON = By.xpath("//sdf-button[@data-test-id='payFreqSelModal-dismissButton']");
+const OFF_CYCLE_PAYROLL_REPORT = By.xpath("//div[@data-test-id='navrow-year-end-3-bonus-payroll-label']");
+const RFB_OFF_CYCLE = By.xpath("//div[@data-test-id='navrow-ye-fringebenefits-link-2-label']");
+const OFFCYCLE_SCREEN = By.xpath("//span[text()='Off-Cycle Payroll']");
+const CALCULATE_MANUAL_CHECKS = By.xpath("//div[@data-test-id='navrow-year-end-4-bonus-payroll-label']");
+const CALCULATE_MANUAL_CHECKS_SCREEN = By.xpath("//div[text()='Calculate and record manual checks']");
+const CALCULATE_MANUAL_CHECKS_OK_BUTTON = By.xpath("//sdf-button[@data-test-id='messageBoxModal-primaryButton']");
+const HOME_BUTTON = By.xpath("//div[@data-targetid='Home']");
+const PTO_TASK = By.xpath("//div[text()='Reconcile paid time off (PTO) balances']");
+const GENERATE_PTO = By.xpath("//div[text()='Generate an Employee Paid Time Off report']");
+const PTO_SETTING = By.xpath("//div[text()='Paid time off settings']");
+const REVIEW_PTO = By.xpath("//div[text()='Review employee PTO balances']");
+const EMPLOYEE_PTO_SCREEN = By.xpath("//div[text()='Employee Paid Time Off']");
+const COMPANY_SETTING_SCREEN = By.xpath("//div[text()='Paid time off']");
+const REVIEW_SCREEN = By.xpath("//ul[@group='Payroll']//following::li//a[text()='Paid Time Off']");
+const RECORD_FRINGE_BENEFITS = By.xpath("//div[text()='Record fringe benefits']");
+const RFB_LEARNMORE = By.xpath("//sdf-button[text()='Learn more about fringe benefits']");
+const DAYS_LEFT_TEXT = By.xpath("//div[@data-test-id='yht_page_title']");
+const PAPERLESS = By.xpath("//div[text()='Go Paperless']");
+const SETTING_ICON = By.xpath("//sdf-icon[@data-test-id='Settings-icon']");
+const SETTING_PAGE = By.xpath("//div[text()='Settings']");
+const PAID_TIME_OFF = By.xpath("//div[text()='Paid time off']");
+const PAID_TIME_OFF_PAGE = By.xpath("//div[@data-test-id='planListPageTitle']");
+const PLAN_NAME = By.xpath("//sdf-button[@variant='text']");
+const EDIT_ICON = By.xpath("//sdf-button[@datatestid='planBehaviourTable-editButton']");
+const HIRE_DATE_CARD = By.xpath("//div[text()='On the employee hire date']");
+const CALENDAR_YEAR_CARD = By.xpath("//div[text()='Calendar year']");
+const NEXT_BUTTON = By.xpath("//sdf-button[@data-test-id='btnNext']");
+const DONE_BUTTON = By.xpath("//sdf-button[text()='Done']");
+const SAVE_BUTTON = By.xpath("//sdf-button[text()='Save']");
+const SUCCESS_MESSAGE = By.xpath("//sdf-alert[contains(text(),'has been updated')]");
+const PTO_CLOSE_BUTTON = By.xpath("//span[@data-test-id='modal-header-icon']");
+const YE_CLOSE_BUTTON = By.xpath("//div[text()='Get ready for year-end']//preceding-sibling::span");
+const PTO_TASK_DISPLAY = By.xpath("//sdf-expandable-box[@data-test-id='Year_End_Step_7']");
+const TRACK_DELIVERY_ICON = By.xpath("//div[text()='Track delivery']");
+const TRACK_DELIVERY_PAGE = By.xpath("//span[@data-test-id='modal-header-icon']//following::div[text()='Track delivery']");
+const COMPLETED_STATUS = By.xpath("//sdf-button[text()='Mark task complete']//ancestor::sdf-expandable-box//descendant::div[text()='Completed']");
+const MARK_TASK_COMPLETED_BUTTON = "(//sdf-button[text()='Mark task complete'])[####]";
+const TASK_TAB = "(//sdf-button[text()='Mark task complete']//ancestor::sdf-expandable-box//child::div[@slot='header'])[####]";
+const NEEDS_REVIEW_TASK_TAB_NAME = "(//sdf-button[text()='Mark task complete']//ancestor::sdf-expandable-box//descendant::div[text()='Needs Review']//ancestor::sdf-expandable-box)[####]";
+const SEARCH_BOX = By.xpath("//div[@data-test-id='home-search-component']//input[@data-test-id='omnisearch-input']");
+const SEARCH_SUGGESTIONS = By.xpath("//div[@data-menuid]//descendant::div[contains(text(),'in')]");
+const NEED_REVIEW_STATUS = By.xpath("//sdf-button[text()='Mark task complete']//ancestor::sdf-expandable-box//descendant::div[text()='Needs Review']");
+const NEED_REVIEW_MARK_TASK_COMPLETED = "(//sdf-button[text()='Mark task complete'])[####]";
 
-        try
-        {
-            // Navigate to the URL
-            driver.Manage().Window.Maximize(); // Maximize the browser window
-            string url = "https://runpayroll-qafit.nj.adp.com/";
-            driver.Navigate().GoToUrl(url);
+class YEtracker extends BasePage {
+  constructor(driver) {
+    super(driver);
+    this.driver = driver;
+  }
+  async closeImportantNotificationsPopup() {
+    await this.waitForElement(IMPORTANT_NOTIFICATION, 30);
+    await this.clickElement(IMPORTANT_NOTIFICATION);
+  }
+  async homePageDisplayed() {
+    let url = await this.driver.getCurrentUrl();
+    if (url.includes("iat")) {
+      await this.closeImportantNotificationsPopup();
+      await this.waitForElement(HOME_PAGE, 30);
+      return await this.isElementDisplayed(HOME_PAGE);
+    }
+    else {
+      await this.waitForElement(HOME_PAGE, 30);
+      return await this.isElementDisplayed(HOME_PAGE);
+    }
+  }
+  async actNowBtnDisplayed() {
+    await this.waitForElement(ACT_NOW_BUTTON, 20);
+    return await this.getText(ACT_NOW_BUTTON);
+  }
 
-            // Wait for the page to load (adjust wait time as needed)
-            wait.Until(driver => ((IJavaScriptExecutor)driver).ExecuteScript("return document.readyState").Equals("complete"));
+  async getCurrentDate() {
+    let today = new Date().toISOString().substring(0, 10);
+    let currentDate = today;
+    return currentDate;
+  }
+  async dec2023EffectiveDate(dataTable) {
+    let decEffectiveDate = dataTable[0].EffectiveDate;
+    return decEffectiveDate;
+  }
+  async fromJan2024EffectiveDate(dataTable) {
+    let janEffectiveDate = dataTable[1].EffectiveDate;
+    return janEffectiveDate;
+  }
 
-            // Wait for the URL to contain the expected value
-            wait.Until(ExpectedConditions.UrlContains("https://online-fit.nj.adp.com/"));
+  async getBannerTextTillDec2023(dataTable) {
+    let endDate2023 = dataTable[0].BannerText;
+    return endDate2023;
+  }
 
-            // Perform login
-            Login(driver, wait);
+  async getBannerTextFromJan2024(dataTable) {
+    let endDateJan2024 = dataTable[1].BannerText;
+    return endDateJan2024;
+  }
 
-            // Additional actions after successful login
-            SearchForItems(driver, wait);
+  async getBannerText() {
+    return await this.getText(ACT_NOW_BUTTON_BANNER_TEXT);
+  }
 
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
-        }
-        finally
-        {
-            driver.Quit();
-        }
+  async bannerTextEffectiveTillDec(dataTable) {
+    if (await this.getCurrentDate() <= await this.dec2023EffectiveDate(dataTable)) {
+      return await this.getBannerTextTillDec2023(dataTable);
+    }
+    else if (await this.getCurrentDate() >= this.fromJan2024EffectiveDate(dataTable)) {
+      return await this.getBannerTextFromJan2024(dataTable);
+    }
+  }
+  async clickonActNowBtn() {
+    await this.waitForElement(ACT_NOW_BUTTON, 20);
+    await this.clickElement(ACT_NOW_BUTTON);
+    await this.waitForElement(PAGE_MAIN_TITLE, 60);
+  }
+
+  async getMainPageTitle() {
+    return await this.getText(PAGE_MAIN_TITLE);
+  }
+
+  async getDaysLeftText() {
+    await this.waitForElement(DAYS_LEFT_TEXT, 30);
+    var actualLeftDays = await this.getText(DAYS_LEFT_TEXT);
+    let today = new Date().toISOString().substring(0, 10);
+    let startDate = today;
+    let endDate = '2023-12-29';
+    let NUmberOfDaysinMilleSeconds = new Date(endDate) - new Date(startDate);
+    let oneDayMilliSeconds = 1000 * 60 * 60 * 24;
+    let onlyNumberOfDays = NUmberOfDaysinMilleSeconds / oneDayMilliSeconds;
+    var expectedLeftDays = onlyNumberOfDays + " days left until year-end 2023";
+    if (actualLeftDays == expectedLeftDays) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+  async verifyGoPaperlessTextIsDisplayed() {
+    await this.waitForElement(PAPERLESS, 60);
+    return await this.getText(PAPERLESS);
+  }
+
+  async verifyEnrolledTextIsDisplayed() {
+    await this.waitForElement(ENROLLED_PAPERLESS_TEXT, 60);
+    return await this.getText(ENROLLED_PAPERLESS_TEXT);
+  }
+
+  async closePayrollScreen() {
+    await this.clickElement(BACK_BUTTON);
+    await this.waitForElement(PAGE_MAIN_TITLE, 60);
+  }
+  async closeManualCheckScreen() {
+    await this.clickElement(BACK_BUTTON);
+  }
+
+  async clickOkOnManualCheckScreen() {
+    await this.waitForElement(CALCULATE_MANUAL_CHECKS_OK_BUTTON, 60);
+    await this.clickElement(CALCULATE_MANUAL_CHECKS_OK_BUTTON);
+  }
+  async yearTrackerPageDisplayedFromMC() {
+    await this.waitForElement(PAGE_MAIN_TITLE, 60);
+    return await this.isElementDisplayed(PAGE_MAIN_TITLE);
+  }
+
+  async clickNudgeBtn() {
+    await this.clickElement(SEND_NUDGE_BUTTON);
+  }
+
+  async clickLearnMoreBtn() {
+    await this.waitForElement(LEARN_MORE_BUTTON, 60);
+    await this.clickElement(LEARN_MORE_BUTTON);
+  }
+  async clickSignMeUpBtn() {
+    await this.clickElement(SIGN_ME_UP_BUTTON);
+  }
+
+  async clickCloseBtn() {
+    await this.clickElement(CLOSE_BUTTON);
+    await this.waitForElement(PAGE_MAIN_TITLE, 20);
+  }
+
+  async closeYearEndPage() {
+    await this.clickElement(YE_CLOSE_BUTTON);
+  }
+
+  async clickTurnOffPaperlessTaxStatementslink() {
+    await this.clickElement(TURN_OFF_LINK);
+  }
+  async clickTurnOffLink() {
+    await this.clickElement(TURN_OFF_LINK_SELECT);
+  }
+
+  async enterFeedbackText() {
+    await this.setText(INPUT_FIELD, "Good");
+  }
+  async clickSubmitBtn() {
+    await this.clickElement(SUBMIT_BUTTON);
+  }
+  async clickOKBtn() {
+    await this.clickElement(OK_BUTTON);
+    await this.waitForElement(PAGE_MAIN_TITLE, 60);
+  }
+
+  async selectPayYearEnd() {
+    await this.clickElement(PAY_YEAR_END_BONUSES);
+    await this.waitForElement(LEARN_MORE_PYEB, 30);
+  }
+
+  async selectPaidTimeOffTask() {
+    await this.clickElement(PTO_TASK);
+    await this.waitForElement(GENERATE_PTO, 30);
+  }
+
+  async selectRecordFringeBenefitsTask() {
+    await this.clickElement(RECORD_FRINGE_BENEFITS);
+    await this.waitForElement(RFB_LEARNMORE, 30);
+  }
+  async learnMoreLinkPYEIsDisplayed() {
+    await this.clickElement(LEARN_MORE_PYEB);
+    let parentWindow = await this.driver.getWindowHandle();
+    await this.waitAndHoldFor(10000);
+    let windows = await this.driver.getAllWindowHandles();
+    await this.driver.switchTo().window(windows[1]);
+    await this.waitForElement(HELP_TEXT, 20);
+    var helpText = await this.getText(HELP_TEXT);
+    await this.driver.close();
+    await this.driver.switchTo().window(parentWindow);
+    if (helpText == "Help") {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+  async payrollDetailsReportSubtaskDisplayed() {
+    return await this.isElementDisplayed(PAYROLL_DETAILS_REPORT);
+  }
+  async regularPayrollReportSubtaskDisplayed() {
+    return await this.isElementDisplayed(REGULAR_PAYROLL_REPORT);
+  }
+  async offCyclePayrollReportSubtaskDisplayed() {
+    return await this.isElementDisplayed(OFF_CYCLE_PAYROLL_REPORT);
+  }
+  async calculateManualChecksSubtaskDisplayed() {
+    return await this.isElementDisplayed(CALCULATE_MANUAL_CHECKS);
+
+  }
+  async generatePTOSubtaskDisplayed() {
+    return await this.isElementDisplayed(GENERATE_PTO);
+  }
+  async paidTimeOffSettingSubtaskDisplayed() {
+    return await this.isElementDisplayed(PTO_SETTING);
+  }
+  async reviewPTOSubtaskDisplayed() {
+    return await this.isElementDisplayed(REVIEW_PTO);
+  }
+
+  async regularPayrollRFBSubtaskDisplayed() {
+    return await this.isElementDisplayed(RFB_RUN_PR);
+  }
+  async offCyclePayrollRFBSubtaskDisplayed() {
+    return await this.isElementDisplayed(RFB_OFF_CYCLE);
+  }
+
+  async clickPayrollDetailsReportSubtask() {
+    await this.clickElement(PAYROLL_DETAILS_REPORT);
+    await this.waitForElement(PAYROLL_DETAILS_SCREEN, 60);
+  }
+  async payrollDetailsReportScreenDisplayed() {
+    return await this.isElementDisplayed(PAYROLL_DETAILS_SCREEN);
+  }
+  async navigatedToYEPage() {
+    await this.clickElement(BACK_BUTTON);
+
+  }
+  async clickRegularPayrollSubtask() {
+    await this.clickElement(REGULAR_PAYROLL_REPORT);
+  }
+  async runRegularPayrollScreenDisplayed() {
+    await this.waitForElement(START_PAYROLL_SCREEN, 30);
+    return await this.isElementDisplayed(START_PAYROLL_SCREEN);
+  }
+
+  async clickRunOffCyclePayrollSubtask() {
+    await this.clickElement(OFF_CYCLE_PAYROLL_REPORT);
+    await this.waitForElement(OFFCYCLE_SCREEN, 30);
+  }
+
+  async runOffCyclePayrollScreenDisplayed() {
+    return await this.isElementDisplayed(OFFCYCLE_SCREEN);
+  }
+  async clickCalculateManualChecksSubtask() {
+    await this.clickElement(CALCULATE_MANUAL_CHECKS);
+    await this.waitForElement(CALCULATE_MANUAL_CHECKS_SCREEN, 60);
+  }
+
+  async calculateManualChecksScreenDisplayed() {
+    return await this.isElementDisplayed(CALCULATE_MANUAL_CHECKS_SCREEN);
+  }
+
+  async clickGenerateEmployeePTOSubtask() {
+    await this.clickElement(GENERATE_PTO);
+    await this.waitForElement(EMPLOYEE_PTO_SCREEN, 30);
+  }
+
+  async generateEmployeePTOScreenDisplayed() {
+    return await this.isElementDisplayed(EMPLOYEE_PTO_SCREEN);
+  }
+  async closePTOScreenBackButton() {
+    await this.clickElement(PTO_BACK_BUTTON);
+  }
+  async navigatedToYEPageFromPTO() {
+    return await this.isElementDisplayed(PAGE_MAIN_TITLE);
+  }
+  async clickPaidTimeOffSettingSubtask() {
+    await this.clickElement(PTO_SETTING);
+    await this.waitForElement(COMPANY_SETTING_SCREEN, 30);
+  }
+
+  async paidTimeOffSettingScreenDisplayed() {
+    return await this.isElementDisplayed(COMPANY_SETTING_SCREEN);
+  }
+  async clickBackIconOnCompanySettingScreen() {
+    await this.clickElement(PTO_BACK_BUTTON);
+  }
+
+  async clickReviewPTOSubtask() {
+    await this.clickElement(REVIEW_PTO);
+    await this.waitForElement(REVIEW_SCREEN, 60);
+  }
+
+  async reviewPTOScreenDisplayed() {
+    return await this.isElementDisplayed(REVIEW_SCREEN);
+  }
+
+  async clickHomeButton() {
+    await this.waitForElement(HOME_BUTTON, 30);
+    await this.clickElement(HOME_BUTTON);
+  }
+
+  async learnMoreLinkRFBIsDisplayed() {
+    await this.clickElement(RFB_LEARNMORE);
+    let parentWindow = await this.driver.getWindowHandle();
+    await this.waitAndHoldFor(10000);
+    let windows = await this.driver.getAllWindowHandles();
+    await this.driver.switchTo().window(windows[1]);
+    await this.waitForElement(HELP_TEXT);
+    var helpText = await this.getText(HELP_TEXT);
+    await this.driver.close();
+    await this.driver.switchTo().window(parentWindow);
+    if (helpText == "Help") {
+      return true;
+    }
+    else {
+      return false;
     }
 
-    static void Login(IWebDriver driver, WebDriverWait wait)
-    {
-        // Find username input
-        IWebElement usernameInput = driver.FindElement(By.Id("login-form_username"));
-        usernameInput.SendKeys("Firmtest1@kumar");
+  }
 
-        // Click next button
-        IWebElement nextButton = driver.FindElement(By.Id("verifUseridBtn"));
-        nextButton.Click();
-        wait.Until(ExpectedConditions.ElementIsVisible(By.Id("login-form_password")));
+  async clickRunRegularPayrollRFBSubtask() {
+    await this.clickElement(RFB_RUN_PR);
+  }
+  async clickRunOffCyclePayrollRFBSubtask() {
+    await this.clickElement(RFB_OFF_CYCLE);
+    await this.waitForElement(OFFCYCLE_SCREEN, 60);
+  }
+  async clickOnCloseRunOffCyclePayrollScreen() {
+    await this.clickElement(PAYROLL_SCREEN_CANCEL_BUTTON);
+  }
 
-        // Find password input
-        IWebElement passwordInput = driver.FindElement(By.Id("login-form_password"));
-        passwordInput.SendKeys("Nihal123#");
+  async clickOKBtn() {
+    await this.clickElement(OK_BUTTON);
+  }
 
-        // Click sign-in button
-        IWebElement signInButton = driver.FindElement(By.Id("signBtn"));
-        signInButton.Click();
-        wait.Until(ExpectedConditions.UrlContains("https://runpayrollmain2-qafit.nj.adp.com/"));
+  async clickSettingButton() {
+    await this.clickElement(SETTING_ICON);
+    await this.waitForElement(SETTING_PAGE, 20);
+  }
+  async selectPaidTimeOff() {
+    await this.clickElement(PAID_TIME_OFF);
+    await this.waitForElement(PAID_TIME_OFF_PAGE, 60);
+  }
+  async selectPlanName() {
+    await this.clickElement(PLAN_NAME);
+  }
+  async selectHireDate() {
+    await this.selectHireDateCard();
+  }
+  async selectCalendar() {
+    await this.selectCalendarCard();
+  }
+
+  async clickEditPlanBehave() {
+    await this.clickElement(EDIT_ICON);
+  }
+  async selectHireDateCard() {
+    await this.clickElement(HIRE_DATE_CARD);
+  }
+  async clickNextButton() {
+    await this.clickElement(NEXT_BUTTON);
+  }
+  async clickDoneButton() {
+    await this.clickElement(DONE_BUTTON);
+  }
+  async clickSaveButton() {
+    await this.clickElement(SAVE_BUTTON);
+    await this.waitForElement(SUCCESS_MESSAGE, 60);
+  }
+
+  async clickCloseIconOfCompanySettingScreen() {
+    await this.clickElement(PTO_CLOSE_BUTTON);
+  }
+
+  async selectCalendarCard() {
+    await this.clickElement(CALENDAR_YEAR_CARD);
+  }
+
+  async ptoTileNotDisplayedForHireDate() {
+    return await this.isElementDisplayed(PTO_TASK_DISPLAY);
+  }
+
+  async ptoTileDisplayedForCalendar() {
+    return await this.isElementDisplayed(PTO_TASK_DISPLAY);
+  }
+
+  async markTaskCompleteButtonDisabled() {
+    let elements = await this.findElements(COMPLETED_STATUS);
+    for (let i = 0; i < elements.length; i++) {
+      if (await elements[i].getText() == "Completed") {
+        var taskElement = TASK_TAB.replace("####", i + 1);
+        await this.clickElement(By.xpath(taskElement));
+        var markTaskCompleted = MARK_TASK_COMPLETED_BUTTON.replace("####", i + 1);
+        await this.scrollIntoView(By.xpath(markTaskCompleted));
+        return await this.isButtonDisabled(By.xpath(markTaskCompleted));
+      }
     }
-
-    static void SearchForItems(IWebDriver driver, WebDriverWait wait)
-    {
-        wait.Until(driver => ((IJavaScriptExecutor)driver).ExecuteScript("return document.readyState").Equals("complete"));
-        wait.Until(ExpectedConditions.UrlContains("https://runpayrollmain2-qafit.nj.adp.com/"));
-
-        // Your existing code for searching items
-        IWebElement searchbar = wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//*[@id=\"SSPage_txtSearch\"]")));
-        searchbar.SendKeys("payroll");
-
-        // Add additional actions as needed
+  }
+  async markTaskCompleteButtonEnabled() {
+    let needReviewElements = await this.findElements(NEED_REVIEW_STATUS);
+    for (let i = 0; i < needReviewElements.length; i++) {
+      if (await needReviewElements[i].getText() == "Needs Review") {
+        var needsReviewTask = NEEDS_REVIEW_TASK_TAB_NAME.replace("####", i + 1);
+        await this.clickElement(By.xpath(needsReviewTask));
+        var needsReviewMarkTask = NEED_REVIEW_MARK_TASK_COMPLETED.replace("####", i + 1);
+        await this.scrollIntoView(By.xpath(needsReviewMarkTask));
+        return await this.isButtonEnabled(By.xpath(needsReviewMarkTask));
+      }
     }
+  }
+
+  async clickSearchBox() {
+    await this.WaitForLoader(60);
+    await this.clickElement(SEARCH_BOX);
+  }
+
+  async enterTextInSearchBox(keyword) {
+    await this.setText(SEARCH_BOX, keyword);
+  }
+  async verifySearchresultIsDisplayed(searchResult) {
+    await this.WaitForLoader(60);
+    let suggestions = await this.findElements(SEARCH_SUGGESTIONS);
+    for (let i = 0; i < suggestions.length; i++) {
+      if (await suggestions[i].getText() == searchResult) {
+        return true;
+      }
+    }
+  }
+
+  async trackDeliveryIconDisplayed() {
+    return await this.isElementDisplayed(TRACK_DELIVERY_ICON);
+  }
+  async clickTrackDeliveryIcon() {
+    await this.clickElement(TRACK_DELIVERY_ICON);
+  }
+  async trackDeliveryPageIsDisplayed() {
+    return await this.isElementDisplayed(TRACK_DELIVERY_PAGE);
+  }
 }
+
+module.exports = YEtracker;
