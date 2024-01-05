@@ -1,59 +1,66 @@
-using OpenQA.Selenium.Support.UI;
-using SeleniumExtras.WaitHelpers;
-using NUnit.Framework;
-using OpenQA.Selenium;
+npm init -y
+npm install selenium-webdriver cucumberCreate a features folder and add a login.feature file with the following content:Feature: Login functionality
 
-namespace ConsoleApp2
-{
-    public class EntryPoint
-    {
+Scenario: User logs in with valid credentials
+  Given I am on the login page
+  When I enter valid username and password
+  And click the login button
+  Then I should be redirected to the dashboardCreate a step_definitions folder and add a login_steps.js file with the following content:const { Given, When, Then } = require('cucumber');
+const { Builder, By, Key, until } = require('selenium-webdriver');
 
-        static void Main()
-        { }
-        [SetUp]
+let driver;
 
-        public void Setup()
-            {
-                {
-                    Login login = new Login();
+Given('I am on the login page', async function () {
+  driver = await new Builder().forBrowser('chrome').build();
+  await driver.get('https://example.com/login');
+});
 
-                    Driver.driver.Manage().Window.Maximize();
+When('I enter valid username and password', async function () {
+  await driver.findElement(By.id('username')).sendKeys('your_username');
+  await driver.findElement(By.id('password')).sendKeys('your_password');
+});
 
-                    string Url = "https://runpayroll-qafit.nj.adp.com/";
+When('click the login button', async function () {
+  await driver.findElement(By.id('loginButton')).click();
+});
 
-                    Driver.driver.Navigate().GoToUrl(Url);
+Then('I should be redirected to the dashboard', async function () {
+  await driver.wait(until.urlIs('https://example.com/dashboard'), 5000);
+  await driver.quit();
+});Create a page_objects folder and add a login_page.js file with the following content:const { By } = require('selenium-webdriver');
 
-                    WebDriverWait wait = new WebDriverWait(Driver.driver, TimeSpan.FromSeconds(35));
-                    try
-                    {
-                        // Wait for the page to load (adjust wait time as needed)
-                        wait.Until(driver => ((IJavaScriptExecutor)driver).ExecuteScript("return document.readyState").Equals("complete"));
+class LoginPage {
+  constructor(driver) {
+    this.driver = driver;
+    this.usernameInput = By.id('username');
+    this.passwordInput = By.id('password');
+    this.loginButton = By.id('loginButton');
+  }
 
-                        // Wait for the URL to contain the expected value
-                        wait.Until(ExpectedConditions.UrlContains("https://online-fit.nj.adp.com/"));
+  async enterUsername(username) {
+    await this.driver.findElement(this.usernameInput).sendKeys(username);
+  }
 
+  async enterPassword(password) {
+    await this.driver.findElement(this.passwordInput).sendKeys(password);
+  }
 
-                        login.username.SendKeys("owner@34554623");
-                        login.next.Click();
-                        Thread.Sleep(2000);
-                        login.password.SendKeys("Test@1357");
-                        login.signin.Click();
-                        Thread.Sleep(5000);
+  async clickLoginButton() {
+    await this.driver.findElement(this.loginButton).click();
+  }
+}
 
+module.exports = LoginPage;Create a login_test.js file in your project's root with the following content:const { Builder } = require('selenium-webdriver');
+const { defineSupportCode } = require('cucumber');
+const LoginPage = require('./page_objects/login_page');
 
-                    Console.WriteLine("Works fine");
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"An error occurred: {ex.Message}");
-                    }
-                }
+defineSupportCode(({ Before, After }) => {
+  Before(async () => {
+    this.driver = await new Builder().forBrowser('chrome').build();
+    this.loginPage = new LoginPage(this.driver);
+  });
 
-              
-                Driver.driver.Quit();
-                
-
-            }
-        }
-    }
-
+  After(async () => {
+    await this.driver.quit();
+  });
+});
